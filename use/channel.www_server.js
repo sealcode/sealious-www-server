@@ -123,7 +123,11 @@ module.exports = function(www_server, dispatcher, dependencies){
             .then(function(user_id) {
                 if (user_id!==false) {
                     var sessionId = www_server.new_session(user_id);
-                    reply("http_session: Logged in!").state('PrometheusSession', sessionId);
+                    if(request.payload.redirect_success){
+                    	reply().redirect(request.payload.redirect_success);
+                    }else{
+                    	reply("http_session: Logged in!").state('PrometheusSession', sessionId);                    	
+                    }
                 }
             })
             .catch(function(error){
