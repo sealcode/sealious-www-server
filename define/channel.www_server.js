@@ -31,7 +31,6 @@ function get_user_id(session_id) {
 }
 
 module.exports = function(www_server, dispatcher, dependencies){
-
     var http_channel = dependencies["channel.http"];
 
     www_server.default_configuration = {
@@ -49,10 +48,11 @@ module.exports = function(www_server, dispatcher, dependencies){
 
     var custom_reply_function = function(original_reply_function, obj){
         var ret;
+        if(obj==undefined) obj={};
+        console.log(obj);
+        if(obj.is_error && !(obj instanceof Error)) obj = new Sealious.Errors.Error(obj.message, obj.error);
         if(obj instanceof Error){
-            original_reply_function(obj.message);
-            console.log(obj.stack);
-        }else if(obj && (obj.is_error || obj.type=="error")){
+            console.log("INTERPRETING AS ERROR");
             if(obj.is_user_fault){
                 ret = original_reply_function(obj.toResponse());
                 ret.statusCode = obj.http_code;                
@@ -61,7 +61,10 @@ module.exports = function(www_server, dispatcher, dependencies){
                 console.log(obj.message);   
                 console.log(obj.stack);
                 ret.statusCode = 500;
-            }
+            }            
+        }else if(obj instanceof Error){
+            original_reply_function(obj.message);
+            console.log(obj.stack);
         }else{
             ret = original_reply_function(obj);
         }
@@ -83,10 +86,12 @@ module.exports = function(www_server, dispatcher, dependencies){
         return old_request;
     }
 
+    console.log("modifying the route function");
     www_server.route = function(){
         var original_handler = arguments[0].handler;
         if(original_handler && typeof original_handler=="function"){
             arguments[0].handler = function(request, reply){
+                console.log("replacing original reply function");
                 var new_reply = custom_reply_function.bind(custom_reply_function, reply);
                 var new_request = process_request(request);
                 original_handler(new_request, new_reply);

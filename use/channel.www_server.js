@@ -100,7 +100,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 				reply(err);
 			})
 		}
-		// hanlder GET ma zwrócić dane użytkownika w obiekcie JSONowym
 	});
 
 	www_server.route({
