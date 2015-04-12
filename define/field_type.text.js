@@ -7,7 +7,7 @@ module.exports = function(field_Type_text){
 			if(this.params.max_length===undefined){
 				resolve();
 			}else{
-				if(value.length<this.params.max_length){
+				if(value.length<=this.params.max_length){
 					resolve();
 				}else{
 					reject("Text '" + value + "' has exceeded max length of " + this.params.max_length + " chars.");
