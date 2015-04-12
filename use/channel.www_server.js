@@ -124,9 +124,9 @@ module.exports = function(www_server, dispatcher, dependencies){
                 if (user_id!==false) {
                     var sessionId = www_server.new_session(user_id);
                     if(request.payload.redirect_success){
-                    	reply().redirect(request.payload.redirect_success);
+                    	reply().state('PrometheusSession', sessionId).redirect(request.payload.redirect_success);
                     }else{
-                    	reply("http_session: Logged in!").state('PrometheusSession', sessionId);                    	
+                    	reply("http_session: Logged in!").state('PrometheusSession', sessionId);
                     }
                 }
             })
