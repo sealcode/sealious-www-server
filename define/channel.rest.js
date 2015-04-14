@@ -50,7 +50,7 @@ module.exports = function(channel, dispatcher, dependencies){
 						reply(error).code(422);
 					});
 				} else {
-					reply("not logged in");
+					reply(new Sealious.Errors.InvalidCredentials("You are not logged in"));
 				}
 			}
 			// handler POST ma stworzyć zasób z podanymi wartościami

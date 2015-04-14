@@ -42,12 +42,12 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: url,
 		handler: function(request, reply){
-			//console.log("user/channel.www_server.js", "username and password:", request.payload.username, ":", request.payload.password);
 			dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
 				.then(function(response){
 					reply().redirect("/login.html#registered");
 				})
 				.catch(function(error){
+					console.log("złapałem błąd w channel.www_server.js");
 					reply(error);
 				})
 		}
@@ -87,6 +87,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		handler: function(request, reply){
 			var session_id = request.state.PrometheusSession;
 			var user_id = www_server.get_user_id(session_id);
+			console.log("USER ID:", user_id);
 			dispatcher.services.user_manager.get_user_data(user_id)
 			.then(function(user_data){
 				if(user_data){

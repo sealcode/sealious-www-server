@@ -22,6 +22,7 @@ function kill_session(session_id) {
 
 function get_user_id(session_id) {
     console.log("all sessions:", session_id_to_user_id);
+    console.log("Session_id:", session_id);
     console.log("session in index:", session_id_to_user_id[session_id]);
     if (session_id_to_user_id[session_id]==undefined) {
         return false;        
@@ -48,14 +49,19 @@ module.exports = function(www_server, dispatcher, dependencies){
 
     var custom_reply_function = function(original_reply_function, obj){
         var ret;
-        if(obj==undefined) obj={};
-        console.log(obj);
+        console.log("inside custom_reply_function. Obj=", obj);
+        if(obj==undefined){
+            obj={};
+        };
+        /*
         if(obj.is_error && !(obj instanceof Error)) obj = new Sealious.Errors.Error(obj.message, obj.error);
         if(obj instanceof Error){
-            console.log("INTERPRETING AS ERROR");
             if(obj.is_user_fault){
+
+                console.log("!!!! is user fault");
+
                 ret = original_reply_function(obj.toResponse());
-                ret.statusCode = obj.http_code;                
+                //ret.statusCode = obj.http_code;                
             }else{
                 ret = original_reply_function("{\"server_error\":true}");
                 console.log(obj.message);   
@@ -65,6 +71,14 @@ module.exports = function(www_server, dispatcher, dependencies){
         }else if(obj instanceof Error){
             original_reply_function(obj.message);
             console.log(obj.stack);
+        }else{
+            ret = original_reply_function(obj);
+        }
+        */
+       var ret;
+        if(obj.is_sealious_error){
+            var res = Sealious.Response.fromError(obj);
+            ret = original_reply_function(res).code(obj.http_code);
         }else{
             ret = original_reply_function(obj);
         }
