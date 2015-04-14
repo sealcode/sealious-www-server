@@ -85,7 +85,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url+"/me",
 		handler: function(request, reply){
-			var session_id = request.state.PrometheusSession;
+			var session_id = request.state.SealiousSession;
 			var user_id = www_server.get_user_id(session_id);
 			console.log("USER ID:", user_id);
 			dispatcher.services.user_manager.get_user_data(user_id)
@@ -107,7 +107,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "PUT",
 		path: url+"/me",
 		handler: function(request, reply){
-			var session_id = request.state.PrometheusSession;
+			var session_id = request.state.SealiousSession;
 			var user_id = www_server.get_user_id(session_id);
 			dispatcher.services.user_manager.update_user_data(user_id, request.payload)
 			.then(function(){
@@ -125,9 +125,9 @@ module.exports = function(www_server, dispatcher, dependencies){
                 if (user_id!==false) {
                     var sessionId = www_server.new_session(user_id);
                     if(request.payload.redirect_success){
-                    	reply().state('PrometheusSession', sessionId).redirect(request.payload.redirect_success);
+                    	reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
                     }else{
-                    	reply("http_session: Logged in!").state('PrometheusSession', sessionId);
+                    	reply("http_session: Logged in!").state('SealiousSession', sessionId);
                     }
                 }
             })
@@ -141,7 +141,7 @@ module.exports = function(www_server, dispatcher, dependencies){
         method: "POST",
         path: "/logout",
         handler: function(request, reply) {
-            www_server.kill_session(request.state.PrometheusSession);
+            www_server.kill_session(request.state.SealiousSession);
             reply().redirect("/login.html");
         }
     });

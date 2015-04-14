@@ -39,7 +39,7 @@ module.exports = function(user_manager, dispatcher){
 				console.log("result:", result);
 				if(result[0]){
 					console.log("found");
-					resolve(result[0].prometheus_id);
+					resolve(result[0].sealious_id);
 				}else{
 					var err = new Sealious.Errors.InvalidCredentials("wrong username or password");
 					reject(err);

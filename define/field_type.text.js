@@ -4,7 +4,7 @@ module.exports = function(field_Type_text){
 
 	field_Type_text.prototype.isProperValue = function(value){
 		return new Promise(function(resolve, reject){
-			if(this.params.max_length===undefined){
+			if(this.params==undefined || this.params.max_length===undefined){
 				resolve();
 			}else{
 				if(value.length<=this.params.max_length){
