@@ -30,7 +30,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 						reply(user_data);
 					})
 					.catch(function(error){
-						reply("There is no such user. Go away.");
+						reply(error);
 					})
 
 			}
@@ -87,19 +87,24 @@ module.exports = function(www_server, dispatcher, dependencies){
 		handler: function(request, reply){
 			var session_id = request.state.SealiousSession;
 			var user_id = www_server.get_user_id(session_id);
-			console.log("USER ID:", user_id);
-			dispatcher.services.user_manager.get_user_data(user_id)
-			.then(function(user_data){
-				if(user_data){
-					user_data.user_id = user_id;
-					reply(user_data);					
-				}else{
-					reply("not logged in");
-				}
-			})
-			.catch(function(err){
-				reply(err);
-			})
+			if (user_id === false) {
+				var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
+				reply(error);
+			} else {
+				console.log("USER ID:", user_id);
+				dispatcher.services.user_manager.get_user_data(user_id)
+				.then(function(user_data){
+					if(user_data){
+						user_data.user_id = user_id;
+						reply(user_data);					
+					}else{
+						reply("not logged in");
+					}
+				})
+				.catch(function(err){
+					reply(err);
+				});	
+			}
 		}
 	});
 

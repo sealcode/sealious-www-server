@@ -53,29 +53,6 @@ module.exports = function(www_server, dispatcher, dependencies){
         if(obj==undefined){
             obj={};
         };
-        /*
-        if(obj.is_error && !(obj instanceof Error)) obj = new Sealious.Errors.Error(obj.message, obj.error);
-        if(obj instanceof Error){
-            if(obj.is_user_fault){
-
-                console.log("!!!! is user fault");
-
-                ret = original_reply_function(obj.toResponse());
-                //ret.statusCode = obj.http_code;                
-            }else{
-                ret = original_reply_function("{\"server_error\":true}");
-                console.log(obj.message);   
-                console.log(obj.stack);
-                ret.statusCode = 500;
-            }            
-        }else if(obj instanceof Error){
-            original_reply_function(obj.message);
-            console.log(obj.stack);
-        }else{
-            ret = original_reply_function(obj);
-        }
-        */
-       var ret;
         if(obj.is_sealious_error){
             var res = Sealious.Response.fromError(obj);
             ret = original_reply_function(res).code(obj.http_code);
