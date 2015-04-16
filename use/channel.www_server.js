@@ -42,14 +42,19 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: url,
 		handler: function(request, reply){
-			dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
-				.then(function(response){
-					reply().redirect("/login.html#registered");
-				})
-				.catch(function(error){
-					console.log("złapałem błąd w channel.www_server.js");
-					reply(error);
-				})
+			if (request.payload.username === undefined || request.payload.password === undefined) {
+        		var error = new Sealious.Errors.InvalidCredentials("Username or password missing!");
+        		reply(error);
+        	} else {
+				dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
+					.then(function(response){
+						reply().redirect("/login.html#registered");
+					})
+					.catch(function(error){
+						console.log("złapałem błąd w channel.www_server.js");
+						reply(error);
+					})
+			}
 		}
 		// handler POST ma stworzyć usera o podanej nazwie i haśle
 	});
