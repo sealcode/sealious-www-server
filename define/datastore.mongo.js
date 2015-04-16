@@ -60,14 +60,12 @@ module.exports = function(datastore_mongo){
 	}
 
 	datastore_mongo.find = function(collection_name, query, options, output_options){
-		console.log("find -> collection_name: ", collection_name);
-		console.log("find -> query: ", query);
 		query = process_query(query);
 		options = options || {};
 		output_options = output_options || {};
 		return new Promise(function(resolve, reject){
 			var cursor = db.collection(collection_name).find(query, options);
-
+			//console.log("cursor: ", cursor);
 			if (output_options.sort) {
 			    cursor.sort(output_options.sort);
 			}
