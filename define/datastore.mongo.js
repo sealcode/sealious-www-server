@@ -111,12 +111,16 @@ module.exports = function(datastore_mongo){
 	}
 	
 	datastore_mongo.delete = function(collection_name, query, justOne){
+		console.log("collection_name: ", collection_name);
+		console.log("query: ", query);
+
 		query = process_query(query);
 		return new Promise(function(resolve, reject){
 			if(justOne===undefined){
 				justOne=0;
 			}
 			justOne = justOne? 1 : 0;
+			console.log("justOne: ", justOne)
 			db.collection(collection_name).remove(query, justOne, function(err, delete_response) {
 			    if (err) {
 			        reject(err);
