@@ -17,7 +17,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 			}else{
 				reply("No data received.")
 			}
-	}
+		}
 		// hanlder GET ma zwrócić dane użytkowników w obiekcie JSONowym
 	});
 
@@ -114,10 +114,15 @@ module.exports = function(www_server, dispatcher, dependencies){
 		handler: function(request, reply){
 			var session_id = request.state.SealiousSession;
 			var user_id = www_server.get_user_id(session_id);
-			dispatcher.services.user_manager.update_user_data(user_id, request.payload)
-			.then(function(){
-				reply("ok!");
-			})
+			if (user_id === false) {
+				var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
+				reply(error);
+			} else {
+				dispatcher.services.user_manager.update_user_data(user_id, request.payload)
+				.then(function(){
+					reply("ok!");
+				})
+			}
 		}	
 	})
 

@@ -63,12 +63,16 @@ module.exports = function(user_manager, dispatcher){
 	}
 
 	user_manager.update_user_data = function(dispatcher, user_id, new_user_data){
+		console.log("user_manager -> user_id: ", user_id);
+		console.log("user_manager -> new_user_data", new_user_data);
+		
 		return dispatcher.datastore.find("users", {user_id: user_id})
 		.then(function(user_document){
 			console.log("user-manager.js user_document", user_document);
 			userdata_id = user_document[0].userdata_id;
 			return dispatcher.resources.update(userdata_id, new_user_data);
 		})
+		
 	}
 
 	user_manager.delete_user = function(dispatcher, username){
