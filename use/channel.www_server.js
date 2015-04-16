@@ -117,6 +117,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 			if (user_id === false) {
 				var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
 				reply(error);
+				
 			} else {
 				dispatcher.services.user_manager.update_user_data(user_id, request.payload)
 				.then(function(){
