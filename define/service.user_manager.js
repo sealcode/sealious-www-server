@@ -77,10 +77,10 @@ module.exports = function(user_manager, dispatcher){
 		return dispatcher.resources.update_resource(user_id, new_user_data);
 	}
 
-	user_manager.delete_user = function(dispatcher, username){
-		return new Promise(function(resolve, reject){ 			
-			dispatcher.datastore.delete("users", {username: username})
-			.then(function(data){
+	user_manager.delete_user = function(dispatcher, user_id){
+ 		return new Promise(function(resolve, reject){ 			
+ 			dispatcher.datastore.delete("resources", {sealious_id: user_id})
+ 			.then(function(data){
 				resolve(data);
 			}).catch(function(e){
 				reject(e);

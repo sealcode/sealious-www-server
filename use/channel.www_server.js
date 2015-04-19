@@ -60,11 +60,10 @@ module.exports = function(www_server, dispatcher, dependencies){
 		path: url+"/{user_id}",
 		handler: function(request, reply){
 			dispatcher.services.user_manager.update_user_data(request.params.user_id, request.payload)
-				.then(function(response){
-					reply();
-				})
+			.then(function(response){
+				reply();
+			})
 		}
-
 	});
 
 
@@ -78,9 +77,23 @@ module.exports = function(www_server, dispatcher, dependencies){
 				})
 				.catch(function(error){
 					reply(error);
-				})
-			}
+			})
+		}
 	});
+
+	www_server.route({
+		method: "DELETE",
+		path: url+"/{user_id}",
+		handler: function(request, reply){
+			dispatcher.services.user_manager.delete_user(request.params.user_id)
+			.then(function(user_data){
+				reply(user_data);
+			})
+			.catch(function(error){
+				reply(error);
+			})
+		}
+	})
 
 	www_server.route({
 		method: "GET",
