@@ -66,21 +66,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		}
 	});
 
-
-	www_server.route({
-		method: "DELETE",
-		path: url,
-		handler: function(request, reply){
-			dispatcher.services.user_manager.delete_user(request.payload.username)
-				.then(function(user_data){
-					reply(user_data);
-				})
-				.catch(function(error){
-					reply(error);
-			})
-		}
-	});
-
 	www_server.route({
 		method: "DELETE",
 		path: url+"/{user_id}",
