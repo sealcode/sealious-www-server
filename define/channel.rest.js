@@ -43,7 +43,7 @@ module.exports = function(channel, dispatcher, dependencies){
 				if(id_by_session!==false){
 					dispatcher.resources.create(resource_type_name, request.payload, id_by_session)
 					.then(function(response){
-						reply(response.toString()).code(201);
+						reply(JSON.stringify(response)).code(201);
 					})
 					.catch(function(error) {
 						console.log("caught error:", error);
