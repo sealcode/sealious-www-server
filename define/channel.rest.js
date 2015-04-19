@@ -58,14 +58,12 @@ module.exports = function(channel, dispatcher, dependencies){
 
 		www_server.route({
 			method: "DELETE",
-			path: url,
+			path: url+"/{id}",
 			handler: function(request, reply){
-				//console.log("rest.js DELETE", request.payload)
-				dispatcher.resources.delete(resource_type_name, request.payload).then(function(response){
-					reply();
+				dispatcher.resources.delete(resource_type_name, request.params.id).then(function(response){
+					reply().code(204);
 				});
 			}
-			// handler POST ma stworzyć zasób z podanymi wartościami
 		});
 
 		www_server.route({
