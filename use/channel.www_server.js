@@ -42,19 +42,15 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: url,
 		handler: function(request, reply){
-			if (request.payload.username === undefined || request.payload.password === undefined) {
-        		var error = new Sealious.Errors.InvalidCredentials("Username or password missing!");
-        		reply(error);
-        	} else {
-				dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
-					.then(function(response){
-						reply().redirect("/login.html#registered");
-					})
-					.catch(function(error){
-						console.log("złapałem błąd w channel.www_server.js");
-						reply(error);
-					})
-			}
+			dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
+				.then(function(response){
+					reply().redirect("/login.html#registered");
+				})
+				.catch(function(error){
+					console.log("złapałem błąd w channel.www_server.js");
+					reply(error);
+				})
+			
 		}
 		// handler POST ma stworzyć usera o podanej nazwie i haśle
 	});
@@ -135,25 +131,20 @@ module.exports = function(www_server, dispatcher, dependencies){
         method: "POST",
         path: "/login",
         handler: function(request, reply) {
-        	if (request.payload.username === undefined || request.payload.password === undefined) {
-        		var error = new Sealious.Errors.InvalidCredentials("Username or password missing!");
-        		reply(error);
-        	} else {
-	            dispatcher.services.user_manager.password_match(request.payload.username, request.payload.password)
-	            .then(function(user_id) {
-	                if (user_id!==false) {
-	                    var sessionId = www_server.new_session(user_id);
-	                    if(request.payload.redirect_success){
-	                    	reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
-	                    }else{
-	                    	reply("http_session: Logged in!").state('SealiousSession', sessionId);
-	                    }
-	                }
-	            })
-	            .catch(function(error){
-	            	reply(error);
-	            })	
-        	}
+            dispatcher.services.user_manager.password_match(request.payload.username, request.payload.password)
+            .then(function(user_id) {
+                if (user_id!==false) {
+                    var sessionId = www_server.new_session(user_id);
+                    if(request.payload.redirect_success){
+                    	reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
+                    }else{
+                    	reply("http_session: Logged in!").state('SealiousSession', sessionId);
+                    }
+                }
+            })
+            .catch(function(error){
+            	reply(error);
+            })	
         }
     });
 
