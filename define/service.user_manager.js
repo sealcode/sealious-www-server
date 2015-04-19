@@ -67,7 +67,6 @@ module.exports = function(user_manager, dispatcher){
 	}
 
 	user_manager.delete_user = function(dispatcher, user_id){
-		console.log("user_id: ", user_id);
  		return new Promise(function(resolve, reject){ 			
  			dispatcher.datastore.delete("resources", {sealious_id: user_id})
  			.then(function(data){
