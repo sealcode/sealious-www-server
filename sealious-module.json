@@ -23,7 +23,8 @@
 			"requires": [
 				"resource_type.user"
 			]
-		}
+		},
+		"service.metadata_manager"
 	],
 	"uses": [
 		"channel.www_server"
