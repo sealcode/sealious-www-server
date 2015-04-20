@@ -24,9 +24,7 @@
 				"resource_type.user"
 			]
 		},
-		{
-			"longid": "service.metadata_manager",
-		}
+		"service.metadata_manager"
 	],
 	"uses": [
 		"channel.www_server"

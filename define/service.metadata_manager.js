@@ -64,5 +64,3 @@ module.exports =  function(metadata_manager, dispatcher){
 		})
 	}
 }
-
-module.exports = MetadataManager;
