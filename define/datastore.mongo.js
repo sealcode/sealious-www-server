@@ -43,7 +43,7 @@ module.exports = function(datastore_mongo){
 		for(var attribute_name in query){
 			if(attribute_name=="sealious_id"){
 				console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ parsing id", query[attribute_name]);
-				new_query[attribute_name] = parseInt(query[attribute_name]);
+				new_query[attribute_name] = query[attribute_name];
 				console.log(new_query);
 			}else{
 				if(query[attribute_name] instanceof Object){

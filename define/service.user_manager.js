@@ -64,7 +64,7 @@ module.exports = function(user_manager, dispatcher){
 	}
 
 	user_manager.get_user_data = function(dispatcher, user_resource_id){
-		var user_resource_id = parseInt(user_resource_id);
+		var user_resource_id = user_resource_id;
 		try{
 			var ret = dispatcher.resources.get_by_id(user_resource_id);						
 		}catch(err){
