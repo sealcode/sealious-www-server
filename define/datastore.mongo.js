@@ -42,9 +42,8 @@ module.exports = function(datastore_mongo){
 		var new_query = {};
 		for(var attribute_name in query){
 			if(attribute_name=="sealious_id"){
-				console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ parsing id", query[attribute_name]);
+				Sealious.Logger.info("parsing id", query[attribute_name]);
 				new_query[attribute_name] = parseInt(query[attribute_name]);
-				console.log(new_query);
 			}else{
 				if(query[attribute_name] instanceof Object){
 					for(var i in query[attribute_name]){
@@ -55,7 +54,6 @@ module.exports = function(datastore_mongo){
 				}				
 			}
 		}
-		console.log("new_query:", new_query, "old_query:", query);
 		return new_query;
 	}
 
@@ -65,7 +63,6 @@ module.exports = function(datastore_mongo){
 		output_options = output_options || {};
 		return new Promise(function(resolve, reject){
 			var cursor = db.collection(collection_name).find(query, options);
-			//console.log("cursor: ", cursor);
 			if (output_options.sort) {
 			    cursor.sort(output_options.sort);
 			}

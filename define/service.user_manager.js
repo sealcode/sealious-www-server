@@ -8,7 +8,7 @@ module.exports = function(user_manager, dispatcher){
 		return dispatcher.services.user_manager.user_exists(username, dispatcher)
 		.then(function(user_exists){	
 			if (!user_exists){
-				console.log("user ", username, "does not exists, creating it");
+				Sealious.Logger.info("User ", username, "does not exists, creating it...");
 				return dispatcher.resources.create("user", {username: username, password:password});
 			}else{
 				throw new Sealious.Errors.ValueExists("Username `" + username + "` is already taken.");
@@ -20,15 +20,15 @@ module.exports = function(user_manager, dispatcher){
 		return new Promise(function(resolve, reject){
 			dispatcher.resources.find({username: username}, "user")
 			.then(function(matched_documents){
-				console.log("user-manager.js", "matched_documents", matched_documents);
-				console.log("user-manager.js user_exists resolving with", matched_documents.length===1)
+				Sealious.Logger.info("user-manager.js", "matched_documents", matched_documents);
+				Sealious.Logger.info("user-manager.js user_exists resolving with", matched_documents.length===1)
 				resolve(matched_documents.length===1);
 			});			
 		})
 	}
 
 	user_manager.password_match = function(dispatcher, username, password){
-		console.log("searching forr "+username+":"+password);
+		Sealious.Logger.info("Searching for username "+username+"...");
 		return new Promise(function(resolve, reject){
 			if (!username && !password) {
 				var err = new Sealious.Errors.InvalidCredentials("Missing username and password!");
@@ -43,12 +43,10 @@ module.exports = function(user_manager, dispatcher){
 				username = username.toString();
 				password = password.toString();
 				var query = {type: "user", body: {username: username, password: password}};
-				console.log("search query: ", query);
 				dispatcher.datastore.find("resources", query)
 				.then(function(result){
-					console.log("result:", result);
 					if(result[0]){
-						console.log("found");
+						Sealious.Logger.info("Username "+username+" found.");
 						resolve(result[0].sealious_id);
 					}else{
 						var err = new Sealious.Errors.InvalidCredentials("wrong username or password");
