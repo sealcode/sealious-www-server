@@ -21,7 +21,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url + "/{user_id}",
 		handler: function(request, reply){
-			Sealious.Logger.info("GET "+url+"/{user_id}");
+			Sealious.Logger.info("GET "+url+"/"+request.params.user_id);
 			dispatcher.services.user_manager.get_user_data(request.params.user_id)
 				.then(function(user_data){ // wywołanie metody z dispatchera webowego
 					reply(user_data);
@@ -56,7 +56,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "PUT",
 		path: url+"/{user_id}",
 		handler: function(request, reply){
-			Sealious.Logger.info("PUT "+url+"/{user_id}");
+			Sealious.Logger.info("PUT "+url+"/"+request.params.user_id);
 			dispatcher.services.user_manager.update_user_data(request.params.user_id, request.payload)
 			.then(function(response){
 				reply();
@@ -68,7 +68,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "DELETE",
 		path: url+"/{user_id}",
 		handler: function(request, reply){
-			Sealious.Logger.info("DELETE "+url+"/{user_id}");
+			Sealious.Logger.info("DELETE "+url+"/"+request.params.user_id);
 			dispatcher.services.user_manager.delete_user(request.params.user_id)
 			.then(function(user_data){
 				reply(user_data);
@@ -133,7 +133,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 			dispatcher.services.user_manager.password_match(request.payload.username, request.payload.password)
 			.then(function(user_id) {
 				if (user_id!==false) {
-					Sealious.Logger.info("User "+request.payload.username+" has successfully logged in.");
+					Sealious.Logger.info("User "+request.payload.username+" has successfully logged in.\n");
 					var sessionId = www_server.new_session(user_id);
 					if(request.payload.redirect_success){
 						reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
@@ -162,6 +162,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: "/api/v1/make_coffee",
 		handler: function(request, reply) {
+			Sealious.Logger.lazyseal("Trying to make coffee...")
+			Sealious.Logger.lazyseal("Oops, I'm a teapot.")
 			reply().code(418);
 		}
 	});

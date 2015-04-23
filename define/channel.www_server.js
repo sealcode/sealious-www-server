@@ -40,7 +40,7 @@ module.exports = function(www_server, dispatcher, dependencies){
     
     www_server.start = function(){
         www_server.server.start(function(err){
-            Sealious.Logger.info('HTTP: '+www_server.server.info.uri+'\n================ \n');
+            Sealious.Logger.info('SERVER RUNNING: '+www_server.server.info.uri+"\n");
         })
     }
 

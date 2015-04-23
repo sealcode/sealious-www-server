@@ -42,7 +42,6 @@ module.exports = function(datastore_mongo){
 		var new_query = {};
 		for(var attribute_name in query){
 			if(attribute_name=="sealious_id"){
-				Sealious.Logger.info("parsing id", query[attribute_name]);
 				new_query[attribute_name] = parseInt(query[attribute_name]);
 			}else{
 				if(query[attribute_name] instanceof Object){
