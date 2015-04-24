@@ -163,7 +163,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		path: "/api/v1/make_coffee",
 		handler: function(request, reply) {
 			Sealious.Logger.lazyseal("Trying to make coffee...")
-			Sealious.Logger.lazyseal("Oops, I'm a teapot.")
+			Sealious.Logger.lazyseal	("Oops, I'm a teapot.")
 			reply().code(418);
 		}
 	});
