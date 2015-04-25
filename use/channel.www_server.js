@@ -47,7 +47,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 					reply().redirect("/login.html#registered");
 				})
 				.catch(function(error){
-					console.log("złapałem błąd w channel.www_server.js");
+					console.log("złapałem błąd w channel.www_server.js", error, error.stack);
 					reply(error);
 				})
 			
