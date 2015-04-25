@@ -43,11 +43,11 @@ module.exports = function(channel, dispatcher, dependencies){
 				if(id_by_session!==false){
 					dispatcher.resources.create(resource_type_name, request.payload, id_by_session)
 					.then(function(response){
-						reply(JSON.stringify(response)).code(201);
+						reply(response).code(201);
 					})
 					.catch(function(error) {
-						console.log("caught error:", error);
-						reply(error).code(422);
+						console.log("caught error:", error, error.stack);
+						reply(error);
 					});
 				} else {
 					reply(new Sealious.Errors.InvalidCredentials("You are not logged in"));

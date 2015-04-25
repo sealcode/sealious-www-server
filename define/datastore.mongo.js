@@ -13,7 +13,7 @@ module.exports = function(datastore_mongo){
 		embedded: false,
 		host: 'localhost',
 		port: 27017,
-		db_name: 'myproject'
+		db_name: 'sealious'
 	}
 
 
@@ -42,8 +42,7 @@ module.exports = function(datastore_mongo){
 		var new_query = {};
 		for(var attribute_name in query){
 			if(attribute_name=="sealious_id"){
-				console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ parsing id", query[attribute_name]);
-				new_query[attribute_name] = parseInt(query[attribute_name]);
+				new_query[attribute_name] = query[attribute_name];
 				console.log(new_query);
 			}else{
 				if(query[attribute_name] instanceof Object){
