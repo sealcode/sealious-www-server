@@ -1,8 +1,9 @@
 var Promise = require("bluebird");
+var sanitizeHtml = require("sanitize-html");
 
-module.exports = function(field_Type_text){
+module.exports = function(field_type_text){
 
-	field_Type_text.prototype.isProperValue = function(value){
+	field_type_text.prototype.isProperValue = function(value){
 		return new Promise(function(resolve, reject){
 			if(this.params==undefined || this.params.max_length===undefined){
 				resolve();
@@ -16,4 +17,20 @@ module.exports = function(field_Type_text){
 		}.bind(this))
 	}
 
+	field_type_text.encode = function(value_in_code){
+		return new Promise(function(resolve, reject){
+			if(this.params && this.params.strip_html === true){
+				var stripped = sanitizeHtml(value_in_code.toString(), {
+					allowedTags: []	
+				})
+				resolve(stripped);
+			}else{
+				if(value_in_code instanceof Object){
+					resolve(JSON.stringify(value_in_code));
+				}else{
+					resolve(value_in_code.toString());
+				}
+			}		
+		})
+	}
 }
