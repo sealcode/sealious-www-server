@@ -40,26 +40,47 @@ module.exports = function(field_type_reference){
 					reject("Incorrect reference resource type: `" +  type + "`. Allowed resource types for this reference are:" + this.params.allowed_types.join(", ") + "."); 
 				}else{
 					var resource_type_object = Sealious.ChipManager.get_chip("resource_type", type);
-					resource_type_object.validate_field_values(value.data).then(function(){
-						resolve();
-					}).catch(function(error){
-						reject(error.data.invalid_fields);
-					}.bind(this));
+					
+					resource_type_object.validate_field_values(value.data)
+						.then(resolve)
+						.catch(function(error){
+							console.log("reference caught error:"); 
+							if(error.is_sealious_error && error.data.invalid_fields==undefined){
+								reject(error.status_message);
+							}else{
+								reject(error.data.invalid_fields);							
+							}
+						});
 				}
 			}else{
 				//value is uid. Check if it is proper
-				
+				Sealious.Dispatcher.resources.get_by_id(value)
+				.then(resolve)
+				.catch(function(error){
+					if(error.type=="not_found"){
+						reject(error.status_message);
+					}else{
+						reject(error);
+					}
+				});
 			}
 		}.bind(this));
 	}
 
 	field_type_reference.prototype.isProperValue.has_byproducts = true;
 
-	field_type_reference.prototype.encode_value = function(value_in_code){
+	field_type_reference.prototype.encode = function(value_in_code){
 		//decide whether to create a new resource (if so, do create it). Resolve with id of referenced resource.
-		if(value_in_code instanceof Object){
-			return //dispatcher.resource_manager.create_resource(value_in_code.type, value_in_code.data);
-		}
+		return new Promise(function(resolve, reject){
+			if(value_in_code instanceof Object){
+				Sealious.Dispatcher.resources.create(value_in_code.type, value_in_code.data).then(function(resource){
+					resolve(resource.id);
+				})
+			}else{
+				//assuming the provided id already exists
+				resolve(value_in_code);
+			}			
+		})
 	}
 }
 

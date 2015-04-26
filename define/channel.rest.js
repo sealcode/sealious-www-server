@@ -39,14 +39,12 @@ module.exports = function(channel, dispatcher, dependencies){
 			path: url,
 			handler: function(request, reply){
 				var id_by_session = www_server.get_user_id(request.state.SealiousSession);
-				console.log("id_by_session:", id_by_session);
 				if(id_by_session!==false){
 					dispatcher.resources.create(resource_type_name, request.payload, id_by_session)
 					.then(function(response){
 						reply(response).code(201);
 					})
 					.catch(function(error) {
-						console.log("caught error:", error, error.stack);
 						reply(error);
 					});
 				} else {
