@@ -44,16 +44,17 @@ module.exports = function(www_server, dispatcher, dependencies){
         })
     }
 
-    var custom_reply_function = function(original_reply_function, obj){
+    var custom_reply_function = function(original_reply_function, request_details, obj){
         var ret;
         if(obj==undefined){
             obj={};
         };
         if(obj.is_sealious_error){
             var res = Sealious.Response.fromError(obj);
-            Sealious.Logger.error(obj.status_message);
+            Sealious.Logger.error(request_details.method+" "+request_details.path+" failed - "+obj.status_message);
             ret = original_reply_function(res).code(obj.http_code);
         }else{
+            Sealious.Logger.info(request_details.method+" "+request_details.path+" - success!");
             ret = original_reply_function(obj);
         }
 
@@ -79,7 +80,11 @@ module.exports = function(www_server, dispatcher, dependencies){
         var original_handler = arguments[0].handler;
         if(original_handler && typeof original_handler=="function"){
             arguments[0].handler = function(request, reply){
-                var new_reply = custom_reply_function.bind(custom_reply_function, reply);
+                var request_details = {
+                    method: request.method.toUpperCase(),
+                    path: request.path
+                };
+                var new_reply = custom_reply_function.bind(custom_reply_function, reply, request_details);
                 var new_request = process_request(request);
                 original_handler(new_request, new_reply);
             }
