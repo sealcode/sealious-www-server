@@ -53,12 +53,9 @@ module.exports = function(field_type_reference){
 				}
 			}else{
 				//value is uid. Check if it is proper
-				console.log("!!!is uid");
 				var supposed_resource_id = value;
 				Sealious.Dispatcher.resources.get_by_id(supposed_resource_id)
 				.then(function(resource){
-					console.log(this.params.allowed_types);
-					console.log(resource);
 					if(this.params.allowed_types.indexOf(resource.type)>=0){
 						resolve(resource);
 					}else{
