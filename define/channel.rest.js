@@ -1,7 +1,5 @@
 module.exports = function(channel, dispatcher, dependencies){
 
-	//console.log("\nREST dependencies:", dependencies);
-
 	var www_server = dependencies["channel.www_server"];
 
 	channel.add_path = function(url, resource_type_name){
@@ -10,6 +8,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/signature",
 			handler: function(request, reply){
+				Sealious.Logger.info("GET "+url+"/signature");
 				dispatcher.resources.get_resource_type_signature(resource_type_name)
 				.then(function(signature){
 					reply(signature);
@@ -24,10 +23,9 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url,
 			handler: function(request, reply){
+				Sealious.Logger.info("GET "+url);
 				dispatcher.resources.list_by_type(resource_type_name)
 				.then(function(resources){ // wywołanie metody z dispatchera webowego
-					//console.log("GOT RESPONSE FROM DISPATCHER");
-					//var resources_arr = resources.map(function(resource){return resource.getData()});
 					reply(resources);
 				});
 			}
@@ -38,6 +36,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "POST",
 			path: url,
 			handler: function(request, reply){
+				Sealious.Logger.info("POST ", url);
 				var id_by_session = www_server.get_user_id(request.state.SealiousSession);
 				if(id_by_session!==false){
 					dispatcher.resources.create(resource_type_name, request.payload, id_by_session)
@@ -58,6 +57,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "DELETE",
 			path: url+"/{id}",
 			handler: function(request, reply){
+				Sealious.Logger.info("DELETE "+url+"/{id}");
 				dispatcher.resources.delete(resource_type_name, request.params.id).then(function(response){
 					reply().code(204);
 				});
@@ -68,7 +68,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				//console.log("rest.js get_resource_by_id", request.params.id);
+				Sealious.Logger.info("GET "+url+"/{id}");
 				dispatcher.resources.get_by_id(request.params.id).then(function(response){
 					reply(response);
 				}).catch(function(error){
@@ -81,7 +81,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "PUT",
 			path: url+"/{id}/access_mode",
 			handler: function(request, reply){
-				//console.log("rest.js get_resource_by_id", request.params.id, request.payload.access_mode, request.payload.access_mode_args);
+				Sealious.Logger.info("PUT "+url+"/{id}/access_mode");
 				dispatcher.resources.edit_resource_access_mode(request.params.id, request.payload.access_mode, request.payload.access_mode_args).then(function(response){
 					reply(response);
 				});
@@ -92,7 +92,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "PUT",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				//console.log("rest.js get_resource_by_id", request.params.id, request.payload.access_mode, request.payload.access_mode_args);
+				Sealious.Logger.info("PUT "+url+"/{id}");
 				dispatcher.resources.update_resource(request.params.id, request.payload).then(function(response){
 					reply(response);
 				});
@@ -104,7 +104,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/{id}/access_mode",
 			handler: function(request, reply){
-				//console.log("rest.js get_resource_access_mode_by_id");
+				Sealious.Logger.info("GET "+url+"/{id}/access_mode");
 				dispatcher.resources.get_access_mode(request.params.id).then(function(response){
 					reply(response);
 				});
