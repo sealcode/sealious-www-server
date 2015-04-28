@@ -13,7 +13,7 @@ module.exports = function(datastore_mongo){
 		embedded: false,
 		host: 'localhost',
 		port: 27017,
-		db_name: 'myproject'
+		db_name: 'sealious'
 	}
 
 

@@ -46,8 +46,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 			})
 			.catch(function(error){
 				reply(error);
-			})
-			
+			})			
 		}
 		// handler POST ma stworzyć usera o podanej nazwie i haśle
 	});
