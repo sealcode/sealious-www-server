@@ -8,7 +8,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url,
 		handler: function(request, reply){
-			Sealious.Logger.info("GET "+url);
 			dispatcher.services.user_manager.get_all_users()
 			.then(function(users){ // wywołanie metody z dispatchera webowego
 				reply(users);
@@ -21,7 +20,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url + "/{user_id}",
 		handler: function(request, reply){
-			Sealious.Logger.info("GET "+url+"/"+request.params.user_id);
 			dispatcher.services.user_manager.get_user_data(request.params.user_id)
 				.then(function(user_data){ // wywołanie metody z dispatchera webowego
 					reply(user_data);
@@ -41,11 +39,9 @@ module.exports = function(www_server, dispatcher, dependencies){
 		handler: function(request, reply){
 			dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
 			.then(function(response){
-				Sealious.Logger.info("POST "+url+" - success!");
 				reply().redirect("/login.html#registered");
 			})
 			.catch(function(error){
-				Sealious.Logger.info("POST "+url+" - failed!")
 				reply(error);
 			})
 			
@@ -57,7 +53,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "PUT",
 		path: url+"/{user_id}",
 		handler: function(request, reply){
-			Sealious.Logger.info("PUT "+url+"/"+request.params.user_id);
 			dispatcher.services.user_manager.update_user_data(request.params.user_id, request.payload)
 			.then(function(response){
 				reply();
@@ -69,7 +64,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "DELETE",
 		path: url+"/{user_id}",
 		handler: function(request, reply){
-			Sealious.Logger.info("DELETE "+url+"/"+request.params.user_id);
 			dispatcher.services.user_manager.delete_user(request.params.user_id)
 			.then(function(user_data){
 				reply(user_data);
@@ -84,7 +78,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url+"/me",
 		handler: function(request, reply){
-			Sealious.Logger.info("GET "+url+"/me");
 			var session_id = request.state.SealiousSession;
 			var user_id = www_server.get_user_id(session_id);
 			if (user_id === false) {
@@ -111,7 +104,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "PUT",
 		path: url+"/me",
 		handler: function(request, reply){
-			Sealious.Logger.info("PUT "+url+"/me");
 			var session_id = request.state.SealiousSession;
 			var user_id = www_server.get_user_id(session_id);
 			if (user_id === false) {
@@ -133,7 +125,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 			dispatcher.services.user_manager.password_match(request.payload.username, request.payload.password)
 			.then(function(user_id) {
 				if (user_id!==false) {
-					Sealious.Logger.info("POST /login - success!");
 					var sessionId = www_server.new_session(user_id);
 					if(request.payload.redirect_success){
 						reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
@@ -143,7 +134,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 				}
 			})
 			.catch(function(error){
-				Sealious.Logger.info("POST /login - failed!");
 				reply(error);
 			})	
 		}
@@ -153,7 +143,6 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: "/logout",
 		handler: function(request, reply) {
-			Sealious.Logger.info("POST /logout");
 			www_server.kill_session(request.state.SealiousSession);
 			reply().redirect("/login.html");
 		}
