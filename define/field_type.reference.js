@@ -44,7 +44,6 @@ module.exports = function(field_type_reference){
 					resource_type_object.validate_field_values(value.data)
 						.then(resolve)
 						.catch(function(error){
-							console.log("reference caught error:"); 
 							if(error.is_sealious_error && error.data.invalid_fields==undefined){
 								reject(error.status_message);
 							}else{
