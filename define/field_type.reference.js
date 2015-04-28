@@ -53,15 +53,25 @@ module.exports = function(field_type_reference){
 				}
 			}else{
 				//value is uid. Check if it is proper
-				Sealious.Dispatcher.resources.get_by_id(value)
-				.then(resolve)
+				console.log("!!!is uid");
+				var supposed_resource_id = value;
+				Sealious.Dispatcher.resources.get_by_id(supposed_resource_id)
+				.then(function(resource){
+					console.log(this.params.allowed_types);
+					console.log(resource);
+					if(this.params.allowed_types.indexOf(resource.type)>=0){
+						resolve(resource);
+					}else{
+						reject("Resource of id `" + supposed_resource_id + "` is not of allowed type. Allowed types are: [" + this.params.allowed_types.join(", ") +"]");
+					}
+				}.bind(this))
 				.catch(function(error){
 					if(error.type=="not_found"){
 						reject(error.status_message);
 					}else{
 						reject(error);
 					}
-				});
+				}.bind(this));
 			}
 		}.bind(this));
 	}
