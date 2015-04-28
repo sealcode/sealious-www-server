@@ -39,12 +39,13 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: url,
 		handler: function(request, reply){
-			Sealious.Logger.info("POST "+url);
 			dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
 			.then(function(response){
+				Sealious.Logger.info("POST "+url+" - success!");
 				reply().redirect("/login.html#registered");
 			})
 			.catch(function(error){
+				Sealious.Logger.info("POST "+url+" - failed!")
 				reply(error);
 			})
 			
@@ -129,11 +130,10 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: "/login",
 		handler: function(request, reply) {
-			Sealious.Logger.info("POST /login");
 			dispatcher.services.user_manager.password_match(request.payload.username, request.payload.password)
 			.then(function(user_id) {
 				if (user_id!==false) {
-					Sealious.Logger.info("User "+request.payload.username+" has successfully logged in.\n");
+					Sealious.Logger.info("POST /login - success!");
 					var sessionId = www_server.new_session(user_id);
 					if(request.payload.redirect_success){
 						reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
@@ -143,6 +143,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 				}
 			})
 			.catch(function(error){
+				Sealious.Logger.info("POST /login - failed!");
 				reply(error);
 			})	
 		}
