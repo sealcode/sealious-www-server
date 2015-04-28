@@ -19,7 +19,6 @@ module.exports = function(field_type_text){
 
 	field_type_text.prototype.encode = function(value_in_code){
 		return new Promise(function(resolve, reject){
-			console.log("!!!!!!!!!!!!!!!!!!!!!!!", this.params);
 			if(this.params && this.params.strip_html === true){
 				var stripped = sanitizeHtml(value_in_code.toString(), {
 					allowedTags: []	
