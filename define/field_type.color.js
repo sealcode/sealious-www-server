@@ -8,7 +8,7 @@ module.exports = function(field_type_color){
 			try{
 				Color(value_in_code.toLowerCase());
 			} catch(e){
-				reject("Value `" + value_in_code + "` could not be parssed as a color.");
+				reject("Value `" + value_in_code + "` could not be parsed as a color.");
 			}
 			resolve();
 		})

@@ -8,7 +8,7 @@ module.exports = function(user_manager, dispatcher){
 		return dispatcher.services.user_manager.user_exists(username, dispatcher)
 		.then(function(user_exists){	
 			if (!user_exists){
-				console.log("user ", username, "does not exists, creating it");
+				Sealious.Logger.info("User " + username +"has been created");
 				return dispatcher.resources.create("user", {username: username, password:password});
 			}else{
 				throw new Sealious.Errors.ValueExists("Username `" + username + "` is already taken.");
@@ -20,15 +20,12 @@ module.exports = function(user_manager, dispatcher){
 		return new Promise(function(resolve, reject){
 			dispatcher.resources.find({username: username}, "user")
 			.then(function(matched_documents){
-				console.log("user-manager.js", "matched_documents", matched_documents);
-				console.log("user-manager.js user_exists resolving with", matched_documents.length===1)
 				resolve(matched_documents.length===1);
 			});			
 		})
 	}
 
 	user_manager.password_match = function(dispatcher, username, password){
-		console.log("searching forr "+username+":"+password);
 		return new Promise(function(resolve, reject){
 			if (!username && !password) {
 				var err = new Sealious.Errors.InvalidCredentials("Missing username and password!");
@@ -43,15 +40,12 @@ module.exports = function(user_manager, dispatcher){
 				username = username.toString();
 				password = password.toString();
 				var query = {type: "user", body: {username: username, password: password}};
-				console.log("search query: ", query);
 				dispatcher.datastore.find("resources", query)
 				.then(function(result){
-					console.log("result:", result);
 					if(result[0]){
-						console.log("found");
 						resolve(result[0].sealious_id);
 					}else{
-						var err = new Sealious.Errors.InvalidCredentials("wrong username or password");
+						var err = new Sealious.Errors.InvalidCredentials("Wrong username or password!");
 						reject(err);
 					}
 				})
@@ -64,7 +58,7 @@ module.exports = function(user_manager, dispatcher){
 	}
 
 	user_manager.get_user_data = function(dispatcher, user_resource_id){
-		var user_resource_id = parseInt(user_resource_id);
+		var user_resource_id = user_resource_id;
 		try{
 			var ret = dispatcher.resources.get_by_id(user_resource_id);						
 		}catch(err){
