@@ -57,7 +57,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "DELETE",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				Sealious.Logger.info("DELETE "+url+"/{id}");
+				Sealious.Logger.info("DELETE "+url+"/"+request.params.id);
 				dispatcher.resources.delete(resource_type_name, request.params.id).then(function(response){
 					reply().code(204);
 				});
@@ -68,7 +68,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				Sealious.Logger.info("GET "+url+"/{id}");
+				Sealious.Logger.info("GET "+url+"/"+request.params.id);
 				dispatcher.resources.get_by_id(request.params.id).then(function(response){
 					reply(response);
 				}).catch(function(error){
@@ -81,7 +81,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "PUT",
 			path: url+"/{id}/access_mode",
 			handler: function(request, reply){
-				Sealious.Logger.info("PUT "+url+"/{id}/access_mode");
+				Sealious.Logger.info("PUT "+url+"/"+request.params.id+"/access_mode");
 				dispatcher.resources.edit_resource_access_mode(request.params.id, request.payload.access_mode, request.payload.access_mode_args).then(function(response){
 					reply(response);
 				});
@@ -92,7 +92,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "PUT",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				Sealious.Logger.info("PUT "+url+"/{id}");
+				Sealious.Logger.info("PUT "+url+"/"+request.params.id);
 				dispatcher.resources.update_resource(request.params.id, request.payload).then(function(response){
 					reply(response);
 				});
@@ -104,7 +104,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/{id}/access_mode",
 			handler: function(request, reply){
-				Sealious.Logger.info("GET "+url+"/{id}/access_mode");
+				Sealious.Logger.info("GET "+url+"/"+request.params.id+"/access_mode");
 				dispatcher.resources.get_access_mode(request.params.id).then(function(response){
 					reply(response);
 				});

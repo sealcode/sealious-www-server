@@ -96,7 +96,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 						user_data.user_id = user_id;
 						reply(user_data);					
 					}else{
-						reply("You need to be logged in!");
+						reply("You need to be logged in!"); //~
 					}
 				})
 				.catch(function(err){
@@ -162,8 +162,10 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: "/api/v1/make_coffee",
 		handler: function(request, reply) {
-			Sealious.Logger.lazyseal("Trying to make coffee...")
-			Sealious.Logger.lazyseal	("Oops, I'm a teapot.")
+			Sealious.Logger.transports.console.level = "lazyseal";
+			Sealious.Logger.lazyseal("Trying to make coffee...");
+			Sealious.Logger.lazyseal("Oops, I'm a teapot.");
+			Sealious.Logger.transports.console.level = "info";
 			reply().code(418);
 		}
 	});
