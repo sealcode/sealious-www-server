@@ -6,10 +6,11 @@ module.exports = function(field_type_float) {
         test = parseFloat(number);
 
         return new Promise(function(resolve, reject) {
-                if (test === null || test === NaN || isNaN(number) === true){
-                    reject("Value `" + number + "` is not a float number format.");
-                }
-            resolve();
+            if (test === null || test === NaN || isNaN(number) === true) {
+                reject("Value `" + number + "` is not a float number format.");
+            } else {
+                resolve();
+            }
         })
     }
 
