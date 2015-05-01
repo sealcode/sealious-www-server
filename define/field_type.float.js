@@ -1,15 +1,14 @@
 var Promise = require("bluebird");
-var isFloat = require("is-float");
 
 module.exports = function(field_type_float) {
 
     field_type_float.prototype.isProperValue = function(number) {
-        var test_1 = parseFloat(number);
-        var test_2 = isFloat(number);
+        var test = parseFloat(number);
+        var test_2 = isNaN(number);
 
         return new Promise(function(resolve, reject) {
             try {
-                if (test_1 === null || test_2 === false) throw e;
+                if (test === null || test === NaN || test_2 === true) throw e;
             } catch (e) {
                 reject("Value `" + number + "` is not a float number format.");
             }
