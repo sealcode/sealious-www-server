@@ -53,11 +53,14 @@ module.exports = function(www_server, dispatcher, dependencies){
             var res = Sealious.Response.fromError(obj);
             Sealious.Logger.error(request_details.method+" "+request_details.path+" failed - "+obj.status_message);
             ret = original_reply_function(res).code(obj.http_code);
+        }else if(obj instanceof Error){
+            Sealious.Logger.error(obj);
+            var res = Selaious.Response.fromError(Sealious.Errors.Error("Internal server error"));
+            ret = original_reply_function(res);
         }else{
             Sealious.Logger.info(request_details.method+" "+request_details.path+" - success!");
             ret = original_reply_function(obj);
         }
-
         return ret;
     }
 
