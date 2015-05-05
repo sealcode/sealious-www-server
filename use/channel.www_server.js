@@ -169,11 +169,11 @@ module.exports = function(www_server, dispatcher, dependencies) {
                 output: 'stream',
                 parse: true
             },
-            handler: function(request, reply) w{
-                dispatcher.files.save_file(request)
-                    .then(function(response) {
-                        reply();
-                    });
+            handler: function(request, reply) {
+                var files_data = request.payload["files"];
+                var files = dispatcher.files.save_file(files_data);
+
+                reply("Files uploaded.");
             }
         }
     });
