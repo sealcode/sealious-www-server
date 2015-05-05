@@ -8,7 +8,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
         method: "GET",
         path: url,
         handler: function(request, reply) {
-                dispatcher.services.user_manager.get_all_users()
+                dispatcher.users.get_all_users()
                     .then(function(users) { // wywołanie metody z dispatchera webowego
                         reply(users);
                     })
@@ -20,7 +20,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
         method: "GET",
         path: url + "/{user_id}",
         handler: function(request, reply) {
-                dispatcher.services.user_manager.get_user_data(request.params.user_id)
+                dispatcher.users.get_user_data(request.params.user_id)
                     .then(function(user_data) { // wywołanie metody z dispatchera webowego
                         reply(user_data);
                     })
@@ -37,7 +37,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
         method: "POST",
         path: url,
         handler: function(request, reply) {
-                dispatcher.services.user_manager.create_user(request.payload.username, request.payload.password)
+                dispatcher.users.create_user(request.payload.username, request.payload.password)
                     .then(function(response) {
                         reply().redirect("/login.html#registered");
                     })
@@ -52,7 +52,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
         method: "PUT",
         path: url + "/{user_id}",
         handler: function(request, reply) {
-            dispatcher.services.user_manager.update_user_data(request.params.user_id, request.payload)
+            dispatcher.users.update_user_data(request.params.user_id, request.payload)
                 .then(function(response) {
                     reply();
                 })
@@ -63,7 +63,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
         method: "DELETE",
         path: url + "/{user_id}",
         handler: function(request, reply) {
-            dispatcher.services.user_manager.delete_user(request.params.user_id)
+            dispatcher.users.delete_user(request.params.user_id)
                 .then(function(user_data) {
                     reply(user_data);
                 })
@@ -83,7 +83,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
                 var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
                 reply(error);
             } else {
-                dispatcher.services.user_manager.get_user_data(user_id)
+                dispatcher.users.get_user_data(user_id)
                     .then(function(user_data) {
                         if (user_data) {
                             user_data.user_id = user_id;
@@ -109,7 +109,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
                 var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
                 reply(error);
             } else {
-                dispatcher.services.user_manager.update_user_data(user_id, request.payload)
+                dispatcher.users.update_user_data(user_id, request.payload)
                     .then(function() {
                         reply("ok!");
                     })
@@ -121,7 +121,7 @@ module.exports = function(www_server, dispatcher, dependencies) {
         method: "POST",
         path: "/login",
         handler: function(request, reply) {
-            dispatcher.services.user_manager.password_match(request.payload.username, request.payload.password)
+            dispatcher.users.password_match(request.payload.username, request.payload.password)
                 .then(function(user_id) {
                     if (user_id !== false) {
                         var sessionId = www_server.new_session(user_id);
@@ -169,11 +169,11 @@ module.exports = function(www_server, dispatcher, dependencies) {
                 output: 'stream',
                 parse: true
             },
-            handler: function(request, reply) {
+            handler: function(request, reply) w{
                 dispatcher.files.save_file(request)
-                .then(function(response) {
-                    reply();
-                });
+                    .then(function(response) {
+                        reply();
+                    });
             }
         }
     });
