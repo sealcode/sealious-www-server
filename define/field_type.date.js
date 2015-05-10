@@ -7,7 +7,7 @@ module.exports = function(field_type_date) {
 
             var date_in_string = date.toString();
 
-            var regex = /^([0-9]{4})-([1-9]|0[1-9]|1[0-2])-([1-9]|0[1-9]|1[0-9]|2[0-9]|30|31)$/; //granulation_per_day
+            var regex = /^([0-9]{4})-(0?[1-9]|1[0-2])-([0-2]?[0-9]|30|31)$/; //granulation_per_day
 
                 if (regex.test(date_in_string) === false || Date.parse(date_in_string) === NaN) {
                     reject("Value `"+date+"`" + " is not date calendar format. Expected value standard IS0 8601 (YYYY-MM-DD)");
