@@ -19,14 +19,7 @@
 		{
 			"longid": "channel.rest",
 			"requires": ["channel.www_server"]
-		},
-		{
-			"longid": "service.user_manager",
-			"requires": [
-				"resource_type.user"
-			]
-		},
-		"service.metadata_manager"
+		}
 	],
 	"uses": [
 		"channel.www_server"
