@@ -6,7 +6,7 @@ module.exports = function(field_type_datetime) {
         return new Promise(function(resolve, reject) {
 
             if (isNaN(datetime) === true || parseInt(datetime) === NaN) {
-                reject("Value `" + datetime + "`" + " is not datetime format. Expected value is timestamp.");
+                reject("Value `" + datetime + "`" + " is not datetime format. Only timestamps are accepted.");
             } else {
                 resolve();
             }
