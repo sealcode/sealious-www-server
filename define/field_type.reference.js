@@ -75,11 +75,11 @@ module.exports = function(field_type_reference){
 
 	field_type_reference.prototype.isProperValue.has_byproducts = true;
 
-	field_type_reference.prototype.encode = function(value_in_code){
+	field_type_reference.prototype.encode = function(context, value_in_code){
 		//decide whether to create a new resource (if so, do create it). Resolve with id of referenced resource.
 		return new Promise(function(resolve, reject){
 			if(value_in_code instanceof Object){
-				Sealious.Dispatcher.resources.create(value_in_code.type, value_in_code.data).then(function(resource){
+				Sealious.Dispatcher.resources.create(context, value_in_code.type, value_in_code.data).then(function(resource){
 					resolve(resource.id);
 				})
 			}else{
@@ -88,6 +88,8 @@ module.exports = function(field_type_reference){
 			}			
 		})
 	}
+
+	field_type_reference.prototype.encode.uses_context = true;
 }
 
 //module.exports = Reference;

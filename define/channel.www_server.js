@@ -44,7 +44,15 @@ module.exports = function(www_server, dispatcher, dependencies){
         })
     }
 
-    var custom_reply_function = function(original_reply_function, request_details, obj){
+    www_server.get_context = function(request){
+        var d = new Date();
+        var timestamp = d.getTime();
+        var ip = request.info.remoteAddress;
+        var session_id = request.state.SealiousSession;
+        return new Sealious.Context(timestamp, ip, session_id);
+    }
+
+    function custom_reply_function(original_reply_function, request_details, obj){
         var ret;
         if(obj==undefined){
             obj={};

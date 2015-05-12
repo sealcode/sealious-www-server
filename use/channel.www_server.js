@@ -8,7 +8,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url,
 		handler: function(request, reply){
-			dispatcher.users.get_all_users()
+			var context = www_server.get_context(request);
+			dispatcher.users.get_all_users(context)
 			.then(function(users){ // wywołanie metody z dispatchera webowego
 				reply(users);
 			})
@@ -20,7 +21,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url + "/{user_id}",
 		handler: function(request, reply){
-			dispatcher.users.get_user_data(request.params.user_id)
+			var context = www_server.get_context(request);
+			dispatcher.users.get_user_data(context, request.params.user_id)
 				.then(function(user_data){ // wywołanie metody z dispatchera webowego
 					reply(user_data);
 				})
@@ -37,7 +39,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: url,
 		handler: function(request, reply){
-			dispatcher.users.create_user(request.payload.username, request.payload.password)
+			var context = www_server.get_context(request);
+			dispatcher.users.create_user(context, request.payload.username, request.payload.password)
 			.then(function(response){
 				reply().redirect("/login.html#registered");
 			})
@@ -52,7 +55,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "PUT",
 		path: url+"/{user_id}",
 		handler: function(request, reply){
-			dispatcher.users.update_user_data(request.params.user_id, request.payload)
+			var context = www_server.get_context(request);
+			dispatcher.users.update_user_data(context, request.params.user_id, request.payload)
 			.then(function(response){
 				reply();
 			})
@@ -63,7 +67,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "DELETE",
 		path: url+"/{user_id}",
 		handler: function(request, reply){
-			dispatcher.users.delete_user(request.params.user_id)
+			var context = www_server.get_context(request);
+			dispatcher.users.delete_user(context, request.params.user_id)
 			.then(function(user_data){
 				reply(user_data);
 			})
@@ -77,25 +82,21 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url+"/me",
 		handler: function(request, reply){
-			var session_id = request.state.SealiousSession;
-			var user_id = www_server.get_user_id(session_id);
-			if (user_id === false) {
-				var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
-				reply(error);
-			} else {
-				dispatcher.users.get_user_data(user_id)
-				.then(function(user_data){
-					if(user_data){
-						user_data.user_id = user_id;
-						reply(user_data);					
-					}else{
-						reply("You need to be logged in!"); //~
-					}
-				})
-				.catch(function(err){
-					reply(err);
-				});	
-			}
+			var context = www_server.get_context(request);
+			var user_id = www_server.get_user_id(context.session_id);
+			console.log(user_id)
+			dispatcher.users.get_user_data(context, user_id)
+			.then(function(user_data){
+				if(user_data){
+					user_data.user_id = user_id;
+					reply(user_data);					
+				}else{
+					reply("You need to be logged in!"); //~
+				}
+			})
+			.catch(function(err){
+				reply(err);
+			});	
 		}
 	});
 
@@ -103,17 +104,12 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "PUT",
 		path: url+"/me",
 		handler: function(request, reply){
-			var session_id = request.state.SealiousSession;
-			var user_id = www_server.get_user_id(session_id);
-			if (user_id === false) {
-				var error = new Sealious.Errors.UnauthorizedRequest("You need to be logged in!")
-				reply(error);
-			} else {
-				dispatcher.users.update_user_data(user_id, request.payload)
-				.then(function(){
-					reply("ok!");
-				})
-			}
+			var context = www_server.get_context(request);
+			dispatcher.users.update_user_data(context, user_id, request.payload)
+			.then(function(){
+				reply("ok!");
+			})
+			
 		}	
 	})
 
@@ -121,7 +117,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: "/login",
 		handler: function(request, reply) {
-			dispatcher.users.password_match(request.payload.username, request.payload.password)
+			var context = www_server.get_context(request);
+			dispatcher.users.password_match(context, request.payload.username, request.payload.password)
 			.then(function(user_id) {
 				if (user_id!==false) {
 					var sessionId = www_server.new_session(user_id);
@@ -142,7 +139,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "POST",
 		path: "/logout",
 		handler: function(request, reply) {
-			www_server.kill_session(request.state.SealiousSession);
+			var context = www_server.get_context(request);
+			www_server.kill_session(context, request.state.SealiousSession);
 			reply().redirect("/login.html");
 		}
 	});
