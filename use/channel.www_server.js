@@ -170,12 +170,40 @@ module.exports = function(www_server, dispatcher, dependencies) {
                 parse: true
             },
             handler: function(request, reply) {
-                var files_data = request.payload["files"];
-                var files = dispatcher.files.save_file(files_data);
+                var files_data = {
+                    files: request.payload["files"], 
+                    owner: www_server.get_user_id(request.state.SealiousSession)
+                };
 
-                reply("Files uploaded.");
+                var files = dispatcher.files.save_file(files_data);
+                var files2 = dispatcher.files.save_file(files_data, "./upload");
+                reply({default_directory: files, defined_directory: files2});
             }
         }
     });
 
+    www_server.route({
+        method: "GET",
+        path: "/api/v1/files",
+        config: {
+            handler: function(request, reply) {
+                var owner = www_server.get_user_id(request.state.SealiousSession)
+
+                var files_list = dispatcher.files.get_list(owner);
+                reply(files_list);
+            }
+        }
+    });
+
+    www_server.route({
+        method: "PUT",
+        path: "/api/v1/files/{filename}",
+        config: {
+            handler: function(request, reply) {
+                var new_name = request.payload.new_name;
+                var state = dispatcher.files.change_name(request.params.filename, new_name);
+                reply();
+            }
+        }
+    });
 }
