@@ -82,8 +82,12 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url+"/me",
 		handler: function(request, reply){
-			var context = www_server.get_context(request);
-			var user_id = www_server.get_user_id(context.session_id);
+
+			Tutaj powinien być po prostu redirect na id użytkownika
+
+
+			var context = Sealious.dispatcher.users.get_context(request);
+			var user_id = Sealious.dispatcher.users.get_user_id(context.session_id);
 			console.log(user_id)
 			dispatcher.users.get_user_data(context, user_id)
 			.then(function(user_data){
@@ -118,20 +122,17 @@ module.exports = function(www_server, dispatcher, dependencies){
 		path: "/login",
 		handler: function(request, reply) {
 			var context = www_server.get_context(request);
-			dispatcher.users.password_match(context, request.payload.username, request.payload.password)
-			.then(function(user_id) {
-				if (user_id!==false) {
-					var sessionId = www_server.new_session(user_id);
-					if(request.payload.redirect_success){
-						reply().state('SealiousSession', sessionId).redirect(request.payload.redirect_success);
-					}else{
-						reply("http_session: Logged in!").state('SealiousSession', sessionId);
-					}
+			Sealious.Dispatcher.users.login_and_start_session(context, request.payload.username, request.payload.password)
+			.then(function(session_id){
+				if(request.payload.redirect_success){
+					reply().state('SealiousSession', session_id).redirect(request.payload.redirect_success);
+				}else{
+					reply("http_session: Logged in!").state('SealiousSession', session_id);
 				}
 			})
 			.catch(function(error){
 				reply(error);
-			})	
+			})
 		}
 	});
 
