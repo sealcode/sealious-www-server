@@ -1,6 +1,4 @@
 module.exports = function(www_server, dispatcher, dependencies){
-	var sessionManager = dependencies["service.session_manager"];
-
 
 	url = "/api/v1/users";
 
@@ -40,7 +38,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		path: url,
 		handler: function(request, reply){
 			var context = www_server.get_context(request);
-			dispatcher.users.create_user(context, request.payload.username, request.payload.password)
+			Sealious.Dispatcher.users.create_user(context, request.payload.username, request.payload.password)
 			.then(function(response){
 				reply().redirect("/login.html#registered");
 			})
@@ -82,48 +80,24 @@ module.exports = function(www_server, dispatcher, dependencies){
 		method: "GET",
 		path: url+"/me",
 		handler: function(request, reply){
-
-			Tutaj powinien być po prostu redirect na id użytkownika
-
-
-			var context = Sealious.dispatcher.users.get_context(request);
-			var user_id = Sealious.dispatcher.users.get_user_id(context.session_id);
-			console.log(user_id)
-			dispatcher.users.get_user_data(context, user_id)
-			.then(function(user_data){
-				if(user_data){
-					user_data.user_id = user_id;
-					reply(user_data);					
-				}else{
-					reply("You need to be logged in!"); //~
-				}
-			})
-			.catch(function(err){
-				reply(err);
-			});	
+			var context = www_server.get_context(request);
+			var user_id = context.get("user_id");
+			if(user_id===false){
+				reply(new Sealious.Errors.UnauthorizedRequest("You need to log in first."));
+			}else{
+				reply().redirect(url+"/"+user_id);
+			}
 		}
 	});
-
-	www_server.route({
-		method: "PUT",
-		path: url+"/me",
-		handler: function(request, reply){
-			var context = www_server.get_context(request);
-			dispatcher.users.update_user_data(context, user_id, request.payload)
-			.then(function(){
-				reply("ok!");
-			})
-			
-		}	
-	})
 
 	www_server.route({
 		method: "POST",
 		path: "/login",
 		handler: function(request, reply) {
 			var context = www_server.get_context(request);
-			Sealious.Dispatcher.users.login_and_start_session(context, request.payload.username, request.payload.password)
-			.then(function(session_id){
+			Sealious.Dispatcher.users.password_match(context, request.payload.username, request.payload.password)
+			.then(function(user_id){
+				var session_id = www_server.new_session(user_id);
 				if(request.payload.redirect_success){
 					reply().state('SealiousSession', session_id).redirect(request.payload.redirect_success);
 				}else{
@@ -141,7 +115,7 @@ module.exports = function(www_server, dispatcher, dependencies){
 		path: "/logout",
 		handler: function(request, reply) {
 			var context = www_server.get_context(request);
-			www_server.kill_session(context, request.state.SealiousSession);
+			www_server.kill_session(request.state.SealiousSession);
 			reply().redirect("/login.html");
 		}
 	});

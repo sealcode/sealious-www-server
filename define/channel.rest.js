@@ -11,11 +11,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			path: url+"/signature",
 			handler: function(request, reply, context){
 				dispatcher.resources.get_resource_type_signature(resource_type_name)
-				.then(function(signature){
-					reply(signature);
-				}).catch(function(err){
-					reply(err);
-				})
+				.then(reply, reply);
 			}
 			// hanlder GET ma wypisać wszystkie zasoby o podanym typie
 		});
@@ -26,9 +22,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			handler: function(request, reply){
 				var context = get_context(request);
 				dispatcher.resources.list_by_type(context, resource_type_name)
-				.then(function(resources){
-					reply(resources);
-				});
+				.then(reply, reply);
 			}
 		});
 
@@ -40,7 +34,7 @@ module.exports = function(channel, dispatcher, dependencies){
 				dispatcher.resources.create(context, resource_type_name, request.payload)
 				.then(function(response){
 					reply(response).code(201);
-				})
+				}, reply)
 			}
 			// handler POST ma stworzyć zasób z podanymi wartościami
 		});
@@ -52,7 +46,7 @@ module.exports = function(channel, dispatcher, dependencies){
 				var context = get_context(request);
 				dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
 					reply().code(204);
-				});
+				}, reply);
 			}
 		});
 
