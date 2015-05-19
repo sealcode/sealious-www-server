@@ -170,14 +170,28 @@ module.exports = function(www_server, dispatcher, dependencies) {
                 parse: true
             },
             handler: function(request, reply) {
+                var files = request.payload["files"];
+
+                if (!files[0]) {
+                    files = [files];
+                }
+                
+                var files_less = [];
+                for(var i in files){
+                    files_less.push({
+                        filename: files[i].hapi.filename,
+                        buffer: files[i]["_data"]
+                    });
+                }
+
                 var files_data = {
-                    files: request.payload["files"], 
+                    files: files_less, 
                     owner: www_server.get_user_id(request.state.SealiousSession)
                 };
 
-                var files = dispatcher.files.save_file(files_data);
-                var files2 = dispatcher.files.save_file(files_data, "./upload");
-                reply({default_directory: files, defined_directory: files2});
+                var files_response = dispatcher.files.save_file(files_data);
+                //var files2_response = dispatcher.files.save_file(files_data, "./upload"); //custom path
+                reply(files_response);
             }
         }
     });
