@@ -4,7 +4,10 @@ module.exports = function(channel, dispatcher, dependencies){
 
 	var get_context = www_server.get_context;
 
+
 	channel.add_path = function(url, resource_type_name){
+
+		var resource_type_object = Sealious.ChipManager.get_chip("resource_type", resource_type_name);
 
 		www_server.route({
 			method: "GET",
@@ -26,16 +29,24 @@ module.exports = function(channel, dispatcher, dependencies){
 			}
 		});
 
+
 		www_server.route({
 			method: "POST",
 			path: url,
-			handler: function(request, reply){
-				var context = get_context(request);
-				dispatcher.resources.create(context, resource_type_name, request.payload)
-				.then(function(response){
-					reply(response).code(201);
-				}, reply)
-			}
+			config: {
+	            payload: {
+	                maxBytes: 209715200,
+	                output: resource_type_object.has_large_data_fields()? 'stream' : "data",
+	                //parse: true
+                },
+				handler: function(request, reply){
+					var context = get_context(request);
+					dispatcher.resources.create(context, resource_type_name, request.payload)
+					.then(function(response){
+						reply(response).code(201);
+					}, reply)
+				}
+            },
 			// handler POST ma stworzyć zasób z podanymi wartościami
 		});
 
