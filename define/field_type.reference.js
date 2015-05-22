@@ -29,7 +29,6 @@ module.exports = function(field_type_reference){
 	}
 
 	field_type_reference.prototype.isProperValue = function(context, value){
-		console.log("reference.isProperValue:", arguments);
 		if(typeof value == "object"){
 			//validate object's values as values for new resource
 			var type = value.type;
@@ -46,17 +45,27 @@ module.exports = function(field_type_reference){
 					return resource_type_object.validate_field_values(context, value.data);					
 				})
 				.catch(function(error){
+					if(error.is_user_fault && error.type=="validation"){
+						return Promise.reject(error.data.invalid_fields);
+					}
 					if(error.is_sealious_error && error.data.invalid_fields==undefined){
 						return Promise.reject(error.status_message);
 					}else{
-						return Promise.reject(error.data.invalid_fields);							
+						if(error instanceof Error){
+							return Promise.reject(error);
+						}
+						if(error.data==undefined){
+							//assuming it's just a map of field_name->error_message
+							return Promise.reject(error);
+						}else{
+							return Promise.reject(error.data.invalid_fields);
+						}
 					}
-				});
+				}.bind(this));
 			}
 		}else{
 			//value is uid. Check if it is proper
 			var supposed_resource_id = value;
-			console.log(supposed_resource_id);
 			return Sealious.Dispatcher.resources.get_by_id(context, supposed_resource_id)
 			.then(function(resource){
 				if(this.params.allowed_types.indexOf(resource.type)>=0){
