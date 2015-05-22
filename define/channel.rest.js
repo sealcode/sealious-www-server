@@ -2,18 +2,16 @@ module.exports = function(channel, dispatcher, dependencies){
 
 	var www_server = dependencies["channel.www_server"];
 
+	var get_context = www_server.get_context;
+
 	channel.add_path = function(url, resource_type_name){
 
 		www_server.route({
 			method: "GET",
 			path: url+"/signature",
-			handler: function(request, reply){
+			handler: function(request, reply, context){
 				dispatcher.resources.get_resource_type_signature(resource_type_name)
-				.then(function(signature){
-					reply(signature);
-				}).catch(function(err){
-					reply(err);
-				})
+				.then(reply, reply);
 			}
 			// hanlder GET ma wypisać wszystkie zasoby o podanym typie
 		});
@@ -22,30 +20,21 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url,
 			handler: function(request, reply){
-				dispatcher.resources.list_by_type(resource_type_name)
-				.then(function(resources){ // wywołanie metody z dispatchera webowego
-					reply(resources);
-				});
+				var context = get_context(request);
+				dispatcher.resources.list_by_type(context, resource_type_name)
+				.then(reply, reply);
 			}
-			// hanlder GET ma wypisać wszystkie zasoby o podanym typie
 		});
 
 		www_server.route({
 			method: "POST",
 			path: url,
 			handler: function(request, reply){
-				var id_by_session = www_server.get_user_id(request.state.SealiousSession);
-				if(id_by_session!==false){
-					dispatcher.resources.create(resource_type_name, request.payload, id_by_session)
-					.then(function(response){
-						reply(response).code(201);
-					})
-					.catch(function(error) {
-						reply(error);
-					});
-				} else {
-					reply(new Sealious.Errors.InvalidCredentials("You are not logged in"));
-				}
+				var context = get_context(request);
+				dispatcher.resources.create(context, resource_type_name, request.payload)
+				.then(function(response){
+					reply(response).code(201);
+				}, reply)
 			}
 			// handler POST ma stworzyć zasób z podanymi wartościami
 		});
@@ -54,9 +43,10 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "DELETE",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				dispatcher.resources.delete(resource_type_name, request.params.id).then(function(response){
+				var context = get_context(request);
+				dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
 					reply().code(204);
-				});
+				}, reply);
 			}
 		});
 
@@ -64,7 +54,8 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				dispatcher.resources.get_by_id(request.params.id).then(function(response){
+				var context = get_context(request);
+				dispatcher.resources.get_by_id(context, request.params.id).then(function(response){
 					reply(response);
 				}).catch(function(error){
 					reply(error);
@@ -74,35 +65,13 @@ module.exports = function(channel, dispatcher, dependencies){
 
 		www_server.route({
 			method: "PUT",
-			path: url+"/{id}/access_mode",
-			handler: function(request, reply){
-				dispatcher.resources.edit_resource_access_mode(request.params.id, request.payload.access_mode, request.payload.access_mode_args).then(function(response){
-					reply(response);
-				});
-			}
-		});
-
-		www_server.route({
-			method: "PUT",
 			path: url+"/{id}",
 			handler: function(request, reply){
-				dispatcher.resources.update_resource(request.params.id, request.payload).then(function(response){
+				var context = get_context(request);
+				dispatcher.resources.update_resource(context, resource_type_name, request.params.id, request.payload).then(function(response){
 					reply(response);
 				});
 			}
-		});
-
-
-		www_server.route({
-			method: "GET",
-			path: url+"/{id}/access_mode",
-			handler: function(request, reply){
-				dispatcher.resources.get_access_mode(request.params.id).then(function(response){
-					reply(response);
-				});
-			}
-		});
-
-		
+		});		
 	}
 }

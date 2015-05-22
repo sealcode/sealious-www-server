@@ -33,4 +33,5 @@ module.exports = function(field_type_text){
 			}		
 		}.bind(this))
 	}
+
 }

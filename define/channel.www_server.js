@@ -1,35 +1,9 @@
 var sha1 = require("sha1");
-
-var session_id_to_user_id = {};
-//póki co hashe sesji sa trzymane tylko w RAMie. Być może trzeba będzie je trzymac w pliku (albo w plikach!) na dysku.
-
-function generate_session_id() {
-    var seed = Math.random().toString();
-    var session_id = sha1(seed);
-    return session_id;
-}
-
-function new_session(user_id) {
-    var session_id = generate_session_id();
-    session_id_to_user_id[session_id] = user_id;
-    return session_id;
-}
-
-function kill_session(session_id) {
-    Sealious.Logger.info("Killing session: ", session_id);
-    delete session_id_to_user_id[session_id];
-}
-
-function get_user_id(session_id) {
-    if (session_id_to_user_id[session_id]==undefined) {
-        return false;        
-    }else{
-        return session_id_to_user_id[session_id];
-    }
-}
-
 module.exports = function(www_server, dispatcher, dependencies){
     var http_channel = dependencies["channel.http"];
+
+    var session_id_to_user_id = {};
+    //póki co hashe sesji sa trzymane tylko w RAMie. Być może trzeba będzie je trzymac w pliku (albo w plikach!) na dysku.
 
     www_server.default_configuration = {
         port: 80
@@ -44,7 +18,15 @@ module.exports = function(www_server, dispatcher, dependencies){
         })
     }
 
-    var custom_reply_function = function(original_reply_function, request_details, obj){
+    www_server.get_context = function(request){
+        var d = new Date();
+        var timestamp = d.getTime();
+        var ip = request.info.remoteAddress;
+        var user_id = www_server.get_user_id(request.state.SealiousSession);
+        return new Sealious.Context(timestamp, ip, user_id);
+    }
+
+    function custom_reply_function(original_reply_function, request_details, obj){
         var ret;
         if(obj==undefined){
             obj={};
@@ -55,7 +37,7 @@ module.exports = function(www_server, dispatcher, dependencies){
             ret = original_reply_function(res).code(obj.http_code);
         }else if(obj instanceof Error){
             Sealious.Logger.error(obj);
-            var res = Selaious.Response.fromError(Sealious.Errors.Error("Internal server error"));
+            var res = Sealious.Response.fromError(Sealious.Errors.Error("Internal server error"));
             ret = original_reply_function(res);
         }else{
             Sealious.Logger.info(request_details.method+" "+request_details.path+" - success!");
@@ -108,6 +90,33 @@ module.exports = function(www_server, dispatcher, dependencies){
         });
     }
 
+
+    function generate_session_id() {
+        var seed = Math.random().toString();
+        var session_id = sha1(seed);
+        return session_id;
+    }
+
+    function new_session(user_id) {
+        var session_id = generate_session_id();
+        session_id_to_user_id[session_id] = user_id;
+        return session_id;
+    }
+
+    function kill_session(session_id) {
+        Sealious.Logger.info("Killing session: ", session_id);
+        delete session_id_to_user_id[session_id];
+    }
+
+    function get_user_id(session_id) {
+        if (session_id_to_user_id[session_id]==undefined) {
+            return false;        
+        }else{
+            return session_id_to_user_id[session_id];
+        }
+    }
+
+    www_server.generate_session_id = generate_session_id;
     www_server.new_session = new_session;
     www_server.kill_session = kill_session;
     www_server.get_user_id = get_user_id;
