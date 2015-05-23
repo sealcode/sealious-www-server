@@ -132,66 +132,19 @@ module.exports = function(www_server, dispatcher, dependencies){
         }
     });
 
+    www_server.unmanaged_route({
+        method: "GET", 
+        path: "/managed-files/{file_id}/{file_name}",
+        handler: function(request, reply){
+            var context = www_server.get_context(request);
+            Sealious.Dispatcher.files.find(context, {id: request.params.file_id})
+            .then(function(file_info){
+                console.log(file_info);
+                var r = reply.file(file_info[0].path_on_hdd);
+                if(file_info[0].mime) r.type(file_info[0].mime);
+            })
+            
+        }
+    })
+
 }
-/*
-    www_server.route({
-        method: "POST",
-        path: "/api/v1/files",
-        config: {
-            payload: {
-                maxBytes: 209715200,
-                output: 'stream',
-                parse: true
-            },
-            handler: function(request, reply) {
-                var files = request.payload["files"];
-
-                if (!files[0]) {
-                    files = [files];
-                }
-                
-                var files_less = [];
-                for(var i in files){
-                    files_less.push({
-                        filename: files[i].hapi.filename,
-                        buffer: files[i]["_data"]
-                    });
-                }
-
-                var files_data = {
-                    files: files_less, 
-                    owner: www_server.get_user_id(request.state.SealiousSession)
-                };
-
-                var files_response = dispatcher.files.save_file(files_data);
-                //var files2_response = dispatcher.files.save_file(files_data, "./upload"); //custom path
-                reply(files_response);
-            }
-        }
-    });
-
-    www_server.route({
-        method: "GET",
-        path: "/api/v1/files",
-        config: {
-            handler: function(request, reply) {
-                var owner = www_server.get_user_id(request.state.SealiousSession)
-
-                var files_list = dispatcher.files.get_list(owner);
-                reply(files_list);
-            }
-        }
-    });
-
-    www_server.route({
-        method: "PUT",
-        path: "/api/v1/files/{filename}",
-        config: {
-            handler: function(request, reply) {
-                var new_name = request.payload.new_name;
-                var state = dispatcher.files.change_name(request.params.filename, new_name);
-                reply();
-            }
-        }
-    });
-*/

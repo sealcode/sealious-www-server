@@ -1,4 +1,7 @@
 var sha1 = require("sha1");
+
+var Promise = require("bluebird");
+
 module.exports = function(www_server, dispatcher, dependencies){
     var http_channel = dependencies["channel.http"];
 
@@ -26,7 +29,32 @@ module.exports = function(www_server, dispatcher, dependencies){
         return new Sealious.Context(timestamp, ip, user_id);
     }
 
-    function custom_reply_function(original_reply_function, request_details, obj){
+    function process_sealious_response_attribute(attribute_value){
+        if(attribute_value instanceof Sealious.File.Reference){
+            return "/managed-files/" + attribute_value.id + "/" + attribute_value.filename;
+        }else{
+            return attribute_value;
+        }
+    }
+
+    function process_sealious_response_element(element){
+        var processed_element = {};
+        for(var key in element){
+            var value = element[key];
+            processed_element[key] = process_sealious_response_attribute(value);
+        }
+        return processed_element;
+    }
+
+    function process_sealious_response(obj){
+        if(obj instanceof Array){
+            return obj.map(process_sealious_response_element);
+        }else{
+            return process_sealious_response_element(obj);
+        }
+    }
+
+    function custom_reply_function(original_reply_function, request_details, obj, status_code){
         var ret;
         if(obj==undefined){
             obj={};
@@ -34,14 +62,16 @@ module.exports = function(www_server, dispatcher, dependencies){
         if(obj.is_sealious_error){
             var res = Sealious.Response.fromError(obj);
             Sealious.Logger.error(request_details.method+" "+request_details.path+" failed - "+obj.status_message);
-            ret = original_reply_function(res).code(obj.http_code);
+            ret = original_reply_function(res);
+            ret.code(obj.http_code);
         }else if(obj instanceof Error){
             Sealious.Logger.error(obj);
             var res = Sealious.Response.fromError(Sealious.Errors.Error("Internal server error"));
             ret = original_reply_function(res);
         }else{
             Sealious.Logger.info(request_details.method+" "+request_details.path+" - success!");
-            ret = original_reply_function(obj);
+            var processed_obj = process_sealious_response(obj)
+            ret = original_reply_function(processed_obj);
         }
         return ret;
     }
@@ -54,16 +84,22 @@ module.exports = function(www_server, dispatcher, dependencies){
                     //this means this attribute is a file
                     var filename = old_request.payload[i].hapi.filename;
                     var data = old_request.payload[i]._data;
-                    old_request.payload[i] = new Sealious.File(context, filename, data);
+                    var mime_type = old_request.payload[i].hapi.headers["content-type"];
+                    console.log(mime_type);
+                    old_request.payload[i] = new Sealious.File(context, filename, data, null, mime_type);
                 }else if(old_request.payload[i] instanceof Array){
                     for(var j in old_request.payload[i]){
-                        var filename = old_request.payload[i][j].hapi.filename;
-                        var data = old_request.payload[i][j]._data;
-                        old_request.payload[i][j] = new Sealious.File(context, filename, data);
+                        if(old_request.payload[i][j].readable){
+                            var filename = old_request.payload[i][j].hapi.filename;
+                            var data = old_request.payload[i][j]._data;
+                            var mime_type = old_request.payload[i][j].hapi.headers["content-type"];
+                            old_request.payload[i][j] = new Sealious.File(context, filename, data, null, mime_type);                            
+                        }
                     }
                 }
             }
         }
+        console.log("old_request after changes:", old_request);
         return old_request;
     }
 
@@ -84,6 +120,8 @@ module.exports = function(www_server, dispatcher, dependencies){
         }
         www_server.server.route.apply(this.server, arguments);
     }
+
+    www_server.unmanaged_route = www_server.server.route.bind(www_server.server);
 
 
     www_server.static_route = function(path, url) {        

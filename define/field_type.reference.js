@@ -89,6 +89,7 @@ module.exports = function(field_type_reference){
 	field_type_reference.prototype.isProperValue.has_byproducts = true;
 
 	field_type_reference.prototype.encode = function(context, value_in_code){
+		console.log("reference.encode:", arguments);
 		//decide whether to create a new resource (if so, do create it). Resolve with id of referenced resource.
 		if(value_in_code instanceof Object){
 			return Sealious.Dispatcher.resources.create(context, value_in_code.type, value_in_code.data).then(function(resource){
