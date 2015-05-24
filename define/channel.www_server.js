@@ -85,7 +85,6 @@ module.exports = function(www_server, dispatcher, dependencies){
                     var filename = old_request.payload[i].hapi.filename;
                     var data = old_request.payload[i]._data;
                     var mime_type = old_request.payload[i].hapi.headers["content-type"];
-                    console.log(mime_type);
                     old_request.payload[i] = new Sealious.File(context, filename, data, null, mime_type);
                 }else if(old_request.payload[i] instanceof Array){
                     for(var j in old_request.payload[i]){
@@ -99,7 +98,6 @@ module.exports = function(www_server, dispatcher, dependencies){
                 }
             }
         }
-        console.log("old_request after changes:", old_request);
         return old_request;
     }
 
