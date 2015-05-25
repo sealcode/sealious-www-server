@@ -31,6 +31,8 @@ module.exports = function(www_server, dispatcher, dependencies){
 
     function process_sealious_response_attribute(attribute_value){
         if(attribute_value instanceof Sealious.File.Reference){
+            if(attribute_value.filename === "")
+                return undefined;
             return "/managed-files/" + attribute_value.id + "/" + attribute_value.filename;
         }else{
             return attribute_value;
@@ -86,6 +88,7 @@ module.exports = function(www_server, dispatcher, dependencies){
                     var data = old_request.payload[i]._data;
                     var mime_type = old_request.payload[i].hapi.headers["content-type"];
                     old_request.payload[i] = new Sealious.File(context, filename, data, null, mime_type);
+
                 }else if(old_request.payload[i] instanceof Array){
                     for(var j in old_request.payload[i]){
                         if(old_request.payload[i][j].readable){
