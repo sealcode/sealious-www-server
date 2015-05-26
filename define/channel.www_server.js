@@ -29,21 +29,21 @@ module.exports = function(www_server, dispatcher, dependencies){
         return new Sealious.Context(timestamp, ip, user_id);
     }
 
-    function process_sealious_response_attribute(attribute_value){
-        if(attribute_value instanceof Sealious.File.Reference){
-            if(attribute_value.filename === "")
-                return undefined;
-            return "/managed-files/" + attribute_value.id + "/" + attribute_value.filename;
-        }else{
-            return attribute_value;
-        }
-    }
-
     function process_sealious_response_element(element){
         var processed_element = {};
         for(var key in element){
             var value = element[key];
-            processed_element[key] = process_sealious_response_attribute(value);
+            if(value instanceof Sealious.File.Reference){
+                if(value.filename===""){
+                    processed_element[key] = undefined;    
+                }else{
+                    processed_element[key] = "/managed-files/" + value.id + "/" + value.filename;      
+                }
+            }else if(typeof value=="object"){
+                processed_element[key] = process_sealious_response_element(value);
+            }else{
+                processed_element[key] = value;
+            }
         }
         return processed_element;
     }
