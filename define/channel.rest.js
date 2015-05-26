@@ -51,7 +51,7 @@ module.exports = function(channel, dispatcher, dependencies) {
                         var context = get_context(request);
                         dispatcher.resources.create(context, resource_type_name, request.payload)
                         .then(function(response){
-                            reply(response, 201);
+                            reply(response).code(201);
                         }, reply)
                     }
                 },
@@ -64,7 +64,7 @@ module.exports = function(channel, dispatcher, dependencies) {
             handler: function(request, reply){
                 var context = get_context(request);
                 dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
-                    reply("", 204);
+                    reply("").code(204);
                 }, reply);
             }
         });
@@ -87,7 +87,7 @@ module.exports = function(channel, dispatcher, dependencies) {
             path: url+"/{id}",
             handler: function(request, reply){
                 var context = get_context(request);
-                dispatcher.resources.update_resource(context, request.params.id, request.payload).then(function(response){
+                dispatcher.resources.update_resource(context, resource_type_name, request.params.id, request.payload).then(function(response){
                     reply(response);
                 });
             }
