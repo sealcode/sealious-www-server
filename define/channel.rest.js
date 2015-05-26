@@ -13,7 +13,7 @@ module.exports = function(channel, dispatcher, dependencies){
 			method: "GET",
 			path: url+"/signature",
 			handler: function(request, reply, context){
-				dispatcher.resources.get_resource_type_signature(resource_type_name)
+				dispatcher.resources.get_resource_type_signature(context, resource_type_name)
 				.then(reply, reply);
 			}
 			// hanlder GET ma wypisać wszystkie zasoby o podanym typie

@@ -10,6 +10,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "bluebird": "^2.9.9",
+    "clone": "^1.0.2",
     "color": "^0.8.0",
     "hapi": "^8.4.0",
     "mongodb": "^1.4.30",

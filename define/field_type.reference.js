@@ -1,4 +1,7 @@
 var Promise = require("bluebird");
+
+var clone = require("clone");
+
 /*
 var Reference = function(declaration){
 	this.validate_declaration(declaration);
@@ -89,7 +92,6 @@ module.exports = function(field_type_reference){
 	field_type_reference.prototype.isProperValue.has_byproducts = true;
 
 	field_type_reference.prototype.encode = function(context, value_in_code){
-		console.log("reference.encode:", arguments);
 		//decide whether to create a new resource (if so, do create it). Resolve with id of referenced resource.
 		if(value_in_code instanceof Object){
 			return Sealious.Dispatcher.resources.create(context, value_in_code.type, value_in_code.data).then(function(resource){
@@ -102,6 +104,25 @@ module.exports = function(field_type_reference){
 	}
 
 	field_type_reference.prototype.encode.uses_context = true;
+
+	field_type_reference.prototype.get_params = function(context){
+		var params_copy = clone(this.params, false);
+		params_copy.allowed_types = {};
+		for(var i in this.params.allowed_types){
+			var type_name = this.params.allowed_types[i];
+			var type_object = Sealious.ChipManager.get_chip("resource_type", type_name);
+			var type_schema = Sealious.ChipManager.get_chip("resource_type", type_name).get_signature();
+			params_copy.allowed_types[type_name] = type_schema;
+		}
+		return params_copy;
+
+	}
+
+	field_type_reference.prototype.decode = function(context, value_in_code){
+		return Sealious.Dispatcher.resources.get_by_id(context, value_in_code);
+	}
+
+	field_type_reference.prototype.decode.uses_context = true;
 }
 
 //module.exports = Reference;
