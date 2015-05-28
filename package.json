@@ -1,9 +1,10 @@
 {
-  "name": "sealious-base-chips",
+  "name": "sealious-www-server",
   "version": "0.4.3",
   "tag": "beta",
+  "keywords": ["sealious-plugin"],
   "description": "",
-  "main": "sealious-module.json",
+  "main": "sealious-www-server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,5 +18,8 @@
     "mongodb": "^1.4.30",
     "sha1": "^1.1.0",
     "tingodb": "^0.3.4"
+  },
+  "peerDependencies":{
+    "sealious": ">=0.4.0"
   }
 }

@@ -1,4 +1,4 @@
-module.exports = function(www_server, dispatcher, dependencies){
+ module.exports = function(www_server, dispatcher, dependencies){
 
     url = "/api/v1/users";
 
