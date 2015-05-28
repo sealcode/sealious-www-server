@@ -91,5 +91,15 @@ module.exports = function(channel, dispatcher, dependencies) {
                 .then(reply, reply);
             }
         });     
+
+        www_server.route({
+            method: "PATCH",
+            path: url+"/{id}",
+            handler: function(request, reply){
+                var context = get_context(request);
+                dispatcher.resources.patch_resource(context, resource_type_name, request.params.id, request.payload)
+                .then(reply, reply);
+            }
+        });     
     }
 }
