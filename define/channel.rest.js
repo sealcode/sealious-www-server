@@ -21,7 +21,8 @@ REST.add_path = function(url, resource_type_name){
         method: "GET",
         path: url+"/signature",
         handler: function(request, reply, context){
-            dispatcher.resources.get_resource_type_signature(context, resource_type_name)
+            console.log(Sealious);
+            Sealious.Dispatcher.resources.get_resource_type_signature(context, resource_type_name)
             .then(reply, reply);
         }
             // hanlder GET ma wypisać wszystkie zasoby o podanym typie
@@ -32,7 +33,7 @@ REST.add_path = function(url, resource_type_name){
         path: url,
         handler: function(request, reply){
             var context = get_context(request);
-            dispatcher.resources.list_by_type(context, resource_type_name)
+            Sealious.Dispatcher.resources.list_by_type(context, resource_type_name)
             .then(reply, reply);
         }
     });
@@ -49,7 +50,7 @@ REST.add_path = function(url, resource_type_name){
                 },
                 handler: function(request, reply){
                     var context = get_context(request);
-                    dispatcher.resources.create(context, resource_type_name, request.payload)
+                    Sealious.Dispatcher.resources.create(context, resource_type_name, request.payload)
                     .then(function(response){
                         reply(response).code(201);
                     }, reply)
@@ -63,7 +64,7 @@ REST.add_path = function(url, resource_type_name){
         path: url+"/{id}",
         handler: function(request, reply){
             var context = get_context(request);
-            dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
+            Sealious.Dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
                 reply("").code(204);
             }, reply);
         }
@@ -74,7 +75,7 @@ REST.add_path = function(url, resource_type_name){
         path: url+"/{id}",
         handler: function(request, reply){
             var context = get_context(request);
-            dispatcher.resources.get_by_id(context, request.params.id).then(function(response){
+            Sealious.Dispatcher.resources.get_by_id(context, request.params.id).then(function(response){
                 reply(response);
             }).catch(function(error){
                 reply(error);
@@ -87,7 +88,7 @@ REST.add_path = function(url, resource_type_name){
         path: url+"/{id}",
         handler: function(request, reply){
             var context = get_context(request);
-            dispatcher.resources.update_resource(context, resource_type_name, request.params.id, request.payload)
+            Sealious.Dispatcher.resources.update_resource(context, resource_type_name, request.params.id, request.payload)
             .then(reply, reply);
         }
     });     
@@ -97,7 +98,7 @@ REST.add_path = function(url, resource_type_name){
         path: url+"/{id}",
         handler: function(request, reply){
             var context = get_context(request);
-            dispatcher.resources.patch_resource(context, resource_type_name, request.params.id, request.payload)
+            Sealious.Dispatcher.resources.patch_resource(context, resource_type_name, request.params.id, request.payload)
             .then(reply, reply);
         }
     });     
