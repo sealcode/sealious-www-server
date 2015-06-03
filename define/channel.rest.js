@@ -72,9 +72,7 @@ REST.add_path = function(url, resource_type_name){
             switch(method.toUpperCase()){
                 case "DELETE":
                     ResourceManager.delete(context, resource_type_name, request.params.id)
-                    .then(function(response){
-                        reply("").code(204);
-                    }, reply);
+                    .then(function(response){reply("").code(204);}, reply);
                 return;
                 break;
                 case "PUT":
