@@ -56,12 +56,13 @@ REST.add_path = function(url, resource_type_name){
     });
 
     www_server.route({
-        method: "*",
+        method: ["GET", "DELETE", "PATCH", "PUT"],
         path: url+"/{id}",
         handler: function(request, reply){
+            console.log("UNIFIED!");
             var method = request.method;
-            if(request[x-http-method-override]){
-                method = request[x-http-method-override];
+            if(request["x-http-method-override"]){
+                method = request["x-http-method-override"];
             }
 
             var ResourceManager = Sealious.Dispatcher.resources;
@@ -82,7 +83,7 @@ REST.add_path = function(url, resource_type_name){
                     promise = ResourceManager.patch_resource(context, resource_type_name, request.params.id, request.payload);
                 break;
                 case "GET":
-                    promise = ResourceManager.resources.get_by_id(context, request.params.id);
+                    promise = ResourceManager.get_by_id(context, request.params.id);
                 break;
             }            
             promise.then(reply, reply);
