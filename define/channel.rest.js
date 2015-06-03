@@ -59,11 +59,11 @@ REST.add_path = function(url, resource_type_name){
         method: ["GET", "DELETE", "PATCH", "PUT"],
         path: url+"/{id}",
         handler: function(request, reply){
-            console.log("UNIFIED!");
             var method = request.method;
-            if(request["x-http-method-override"]){
-                method = request["x-http-method-override"];
+            if(request.headers["x-http-method-override"]){
+                method = request.headers["x-http-method-override"];
             }
+            console.log("UNIFIED!", method);
 
             var ResourceManager = Sealious.Dispatcher.resources;
 
