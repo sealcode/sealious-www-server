@@ -61,15 +61,18 @@ function custom_reply_function(original_reply_function, request_details, obj, st
     if(obj==undefined){
         obj={};
     };
-    if(obj.is_sealious_error){
+    if(obj.is_sealious_error || obj.is_error){
         var res = Sealious.Response.fromError(obj);
         Sealious.Logger.error(request_details.method+" "+request_details.path+" failed - "+obj.status_message);
         ret = original_reply_function(res);
         ret.code(obj.http_code);
+        console.log(obj.stack);
     }else if(obj instanceof Error){
         Sealious.Logger.error(obj);
-        var res = Sealious.Response.fromError(Sealious.Errors.Error("Internal server error"));
-        ret = original_reply_function(res);
+        console.log(obj.stack);
+        var err = Sealious.Errors.Error("Internal server error")
+        var res = Sealious.Response.fromError(err);
+        ret = original_reply_function(res).code(err.http_code);
     }else{
         Sealious.Logger.info(request_details.method+" "+request_details.path+" - success!");
         var processed_obj = process_sealious_response(obj)

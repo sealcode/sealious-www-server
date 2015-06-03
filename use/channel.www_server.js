@@ -1,150 +1,145 @@
- module.exports = function(www_server, dispatcher, dependencies){
+var www_server = Sealious.ChipManager.get_chip("channel", "www_server");
 
-    url = "/api/v1/users";
+url = "/api/v1/users";
 
-    www_server.route({
-        method: "GET",
-        path: url,
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            dispatcher.users.get_all_users(context)
-            .then(function(users){ // wywołanie metody z dispatchera webowego
-                reply(users);
-            })
+www_server.route({
+    method: "GET",
+    path: url,
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        dispatcher.users.get_all_users(context)
+        .then(function(users){
+            reply(users);
+        })
+    }
+});
+
+www_server.route({
+    method: "GET",
+    path: url + "/{user_id}",
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        dispatcher.users.get_user_data(context, request.params.user_id)
+        .then(function(user_data){ 
+            reply(user_data);
+        })
+        .catch(function(error){
+            reply(error);
+        })
+
+    }
+});
+
+
+www_server.route({
+    method: "POST",
+    path: url,
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        Sealious.Dispatcher.users.create_user(context, request.payload.username, request.payload.password)
+        .then(function(response){
+            reply().redirect("/login.html#registered");
+        })
+        .catch(function(error){
+            reply(error);
+        })          
+    }
+});
+
+www_server.route({
+    method: "PUT",
+    path: url+"/{user_id}",
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        dispatcher.users.update_user_data(context, request.params.user_id, request.payload)
+        .then(function(response){
+            reply();
+        })
+    }
+});
+
+www_server.route({
+    method: "DELETE",
+    path: url+"/{user_id}",
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        dispatcher.users.delete_user(context, request.params.user_id)
+        .then(function(user_data){
+            reply(user_data);
+        })
+        .catch(function(error){
+            reply(error);
+        })
+    }
+})
+
+www_server.route({
+    method: "GET",
+    path: url+"/me",
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        var user_id = context.get("user_id");
+        if(user_id===false){
+            reply(new Sealious.Errors.UnauthorizedRequest("You need to log in first."));
+        }else{
+            reply().redirect(url+"/"+user_id);
         }
-        // hanlder GET ma zwrócić dane użytkowników w obiekcie JSONowym
-    });
+    }
+});
 
-    www_server.route({
-        method: "GET",
-        path: url + "/{user_id}",
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            dispatcher.users.get_user_data(context, request.params.user_id)
-                .then(function(user_data){ // wywołanie metody z dispatchera webowego
-                    reply(user_data);
-                })
-                .catch(function(error){
-                    reply(error);
-                })
-
-            }
-        // hanlder GET ma zwrócić dane konkretnego użytkownika w obiekcie JSONowym
-    });
-
-
-    www_server.route({
-        method: "POST",
-        path: url,
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            Sealious.Dispatcher.users.create_user(context, request.payload.username, request.payload.password)
-            .then(function(response){
-                reply().redirect("/login.html#registered");
-            })
-            .catch(function(error){
-                reply(error);
-            })          
-        }
-        // handler POST ma stworzyć usera o podanej nazwie i haśle
-    });
-
-    www_server.route({
-        method: "PUT",
-        path: url+"/{user_id}",
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            dispatcher.users.update_user_data(context, request.params.user_id, request.payload)
-            .then(function(response){
-                reply();
-            })
-        }
-    });
-
-    www_server.route({
-        method: "DELETE",
-        path: url+"/{user_id}",
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            dispatcher.users.delete_user(context, request.params.user_id)
-            .then(function(user_data){
-                reply(user_data);
-            })
-            .catch(function(error){
-                reply(error);
-            })
-        }
-    })
-
-    www_server.route({
-        method: "GET",
-        path: url+"/me",
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            var user_id = context.get("user_id");
-            if(user_id===false){
-                reply(new Sealious.Errors.UnauthorizedRequest("You need to log in first."));
+www_server.route({
+    method: "POST",
+    path: "/login",
+    handler: function(request, reply) {
+        var context = www_server.get_context(request);
+        Sealious.Dispatcher.users.password_match(context, request.payload.username, request.payload.password)
+        .then(function(user_id){
+            var session_id = www_server.new_session(user_id);
+            if(request.payload.redirect_success){
+                reply().state('SealiousSession', session_id).redirect(request.payload.redirect_success);
             }else{
-                reply().redirect(url+"/"+user_id);
+                reply("http_session: Logged in!").state('SealiousSession', session_id);
             }
-        }
-    });
+        })
+        .catch(function(error){
+            reply(error);
+        })
+    }
+});
 
-    www_server.route({
-        method: "POST",
-        path: "/login",
-        handler: function(request, reply) {
-            var context = www_server.get_context(request);
-            Sealious.Dispatcher.users.password_match(context, request.payload.username, request.payload.password)
-            .then(function(user_id){
-                var session_id = www_server.new_session(user_id);
-                if(request.payload.redirect_success){
-                    reply().state('SealiousSession', session_id).redirect(request.payload.redirect_success);
-                }else{
-                    reply("http_session: Logged in!").state('SealiousSession', session_id);
-                }
-            })
-            .catch(function(error){
-                reply(error);
-            })
-        }
-    });
+www_server.route({
+    method: "POST",
+    path: "/logout",
+    handler: function(request, reply) {
+        var context = www_server.get_context(request);
+        www_server.kill_session(request.state.SealiousSession);
+        reply().redirect("/login.html");
+    }
+});
 
-    www_server.route({
-        method: "POST",
-        path: "/logout",
-        handler: function(request, reply) {
-            var context = www_server.get_context(request);
-            www_server.kill_session(request.state.SealiousSession);
-            reply().redirect("/login.html");
-        }
-    });
+www_server.route({
+    method: "GET",
+    path: "/api/v1/make_coffee",
+    handler: function(request, reply) {
+        Sealious.Logger.transports.console.level = "lazyseal";
+        Sealious.Logger.lazyseal("Trying to make coffee...");
+        Sealious.Logger.lazyseal("Oops, I'm a teapot.");
+        Sealious.Logger.transports.console.level = "info";
+        reply().code(418);
+    }
+});
 
-    www_server.route({
-        method: "GET",
-        path: "/api/v1/make_coffee",
-        handler: function(request, reply) {
-            Sealious.Logger.transports.console.level = "lazyseal";
-            Sealious.Logger.lazyseal("Trying to make coffee...");
-            Sealious.Logger.lazyseal("Oops, I'm a teapot.");
-            Sealious.Logger.transports.console.level = "info";
-            reply().code(418);
-        }
-    });
+www_server.unmanaged_route({
+    method: "GET", 
+    path: "/managed-files/{file_id}/{file_name}",
+    handler: function(request, reply){
+        var context = www_server.get_context(request);
+        Sealious.Dispatcher.files.find(context, {id: request.params.file_id})
+        .then(function(file_info){
+            console.log(file_info);
+            var r = reply.file(file_info[0].path_on_hdd);
+            if(file_info[0].mime) r.type(file_info[0].mime);
+        })
 
-    www_server.unmanaged_route({
-        method: "GET", 
-        path: "/managed-files/{file_id}/{file_name}",
-        handler: function(request, reply){
-            var context = www_server.get_context(request);
-            Sealious.Dispatcher.files.find(context, {id: request.params.file_id})
-            .then(function(file_info){
-                console.log(file_info);
-                var r = reply.file(file_info[0].path_on_hdd);
-                if(file_info[0].mime) r.type(file_info[0].mime);
-            })
-            
-        }
-    })
-
-}
+    }
+}}

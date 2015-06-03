@@ -38,6 +38,18 @@ REST.add_path = function(url, resource_type_name){
         }
     });
 
+    www_server.route({
+        method: "GET",
+        path: url+"/{id}",
+        handler: function(request, reply){
+            var context = get_context(request);
+            Sealious.Dispatcher.resources.get_by_id(context, request.params.id).then(function(response){
+                reply(response);
+            }).catch(function(error){
+                reply(error);
+            });
+        }
+    });
 
     www_server.route({
         method: "POST",
@@ -67,19 +79,6 @@ REST.add_path = function(url, resource_type_name){
             Sealious.Dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
                 reply("").code(204);
             }, reply);
-        }
-    });
-
-    www_server.route({
-        method: "GET",
-        path: url+"/{id}",
-        handler: function(request, reply){
-            var context = get_context(request);
-            Sealious.Dispatcher.resources.get_by_id(context, request.params.id).then(function(response){
-                reply(response);
-            }).catch(function(error){
-                reply(error);
-            });
         }
     });
 
