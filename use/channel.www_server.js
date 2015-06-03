@@ -136,7 +136,6 @@ www_server.unmanaged_route({
         var context = www_server.get_context(request);
         Sealious.Dispatcher.files.find(context, {id: request.params.file_id})
         .then(function(file_info){
-            console.log(file_info);
             var r = reply.file(file_info[0].path_on_hdd);
             if(file_info[0].mime) r.type(file_info[0].mime);
         })

@@ -21,7 +21,6 @@ REST.add_path = function(url, resource_type_name){
         method: "GET",
         path: url+"/signature",
         handler: function(request, reply, context){
-            console.log(Sealious);
             Sealious.Dispatcher.resources.get_resource_type_signature(context, resource_type_name)
             .then(reply, reply);
         }
