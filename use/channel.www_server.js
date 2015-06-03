@@ -7,7 +7,7 @@ www_server.route({
     path: url,
     handler: function(request, reply){
         var context = www_server.get_context(request);
-        dispatcher.users.get_all_users(context)
+        Sealious.Dispatcher.users.get_all_users(context)
         .then(function(users){
             reply(users);
         })
@@ -19,7 +19,7 @@ www_server.route({
     path: url + "/{user_id}",
     handler: function(request, reply){
         var context = www_server.get_context(request);
-        dispatcher.users.get_user_data(context, request.params.user_id)
+        Sealious.Dispatcher.users.get_user_data(context, request.params.user_id)
         .then(function(user_data){ 
             reply(user_data);
         })
@@ -51,7 +51,7 @@ www_server.route({
     path: url+"/{user_id}",
     handler: function(request, reply){
         var context = www_server.get_context(request);
-        dispatcher.users.update_user_data(context, request.params.user_id, request.payload)
+        Sealious.Dispatcher.users.update_user_data(context, request.params.user_id, request.payload)
         .then(function(response){
             reply();
         })
@@ -63,7 +63,7 @@ www_server.route({
     path: url+"/{user_id}",
     handler: function(request, reply){
         var context = www_server.get_context(request);
-        dispatcher.users.delete_user(context, request.params.user_id)
+        Sealious.Dispatcher.users.delete_user(context, request.params.user_id)
         .then(function(user_data){
             reply(user_data);
         })
