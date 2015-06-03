@@ -38,66 +38,56 @@ REST.add_path = function(url, resource_type_name){
     });
 
     www_server.route({
-        method: "GET",
-        path: url+"/{id}",
-        handler: function(request, reply){
-            var context = get_context(request);
-            Sealious.Dispatcher.resources.get_by_id(context, request.params.id).then(function(response){
-                reply(response);
-            }).catch(function(error){
-                reply(error);
-            });
-        }
-    });
-
-    www_server.route({
         method: "POST",
         path: url,
         config: {
             payload: {
                 maxBytes: 209715200,
                 output: resource_type_object.has_large_data_fields()? 'stream' : "data",
-                    //parse: true
-                },
-                handler: function(request, reply){
-                    var context = get_context(request);
-                    Sealious.Dispatcher.resources.create(context, resource_type_name, request.payload)
-                    .then(function(response){
-                        reply(response).code(201);
-                    }, reply)
-                }
             },
-            // handler POST ma stworzyć zasób z podanymi wartościami
-        });
-
-    www_server.route({
-        method: "DELETE",
-        path: url+"/{id}",
-        handler: function(request, reply){
-            var context = get_context(request);
-            Sealious.Dispatcher.resources.delete(context, resource_type_name, request.params.id).then(function(response){
-                reply("").code(204);
-            }, reply);
-        }
+            handler: function(request, reply){
+                var context = get_context(request);
+                Sealious.Dispatcher.resources.create(context, resource_type_name, request.payload)
+                .then(function(response){
+                    reply(response).code(201);
+                }, reply)
+            }
+        },
     });
 
     www_server.route({
-        method: "PUT",
+        method: "*",
         path: url+"/{id}",
         handler: function(request, reply){
-            var context = get_context(request);
-            Sealious.Dispatcher.resources.update_resource(context, resource_type_name, request.params.id, request.payload)
-            .then(reply, reply);
-        }
-    });     
+            var method = request.method;
+            if(request[x-http-method-override]){
+                method = request[x-http-method-override];
+            }
 
-    www_server.route({
-        method: "PATCH",
-        path: url+"/{id}",
-        handler: function(request, reply){
+            var ResourceManager = Sealious.Dispatcher.resources;
+
             var context = get_context(request);
-            Sealious.Dispatcher.resources.patch_resource(context, resource_type_name, request.params.id, request.payload)
-            .then(reply, reply);
+
+            var promise;
+            switch(method.toUpperCase()){
+                case "DELETE":
+                    ResourceManager.delete(context, resource_type_name, request.params.id)
+                    .then(function(response){
+                        reply("").code(204);
+                    }, reply);
+                return;
+                break;
+                case "PUT":
+                    promise = ResourceManager.update_resource(context, resource_type_name, request.params.id, request.payload);
+                break;
+                case "PATCH":
+                    promise = ResourceManager.patch_resource(context, resource_type_name, request.params.id, request.payload);
+                break;
+                case "GET":
+                    promise = ResourceManager.resources.get_by_id(context, request.params.id);
+                break;
+            }            
+            promise.then(reply, reply);
         }
-    });     
+    });
 }
