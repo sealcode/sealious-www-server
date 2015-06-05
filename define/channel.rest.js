@@ -63,7 +63,6 @@ REST.add_path = function(url, resource_type_name){
             if(request.headers["x-http-method-override"]){
                 method = request.headers["x-http-method-override"];
             }
-            console.log("UNIFIED!", method);
 
             var ResourceManager = Sealious.Dispatcher.resources;
 
