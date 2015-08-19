@@ -1,3 +1,4 @@
+var Sealious = require("sealious");
 var www_server = Sealious.ChipManager.get_chip("channel", "www_server");
 
 url = "/api/v1/users";
@@ -38,7 +39,11 @@ www_server.route({
         var context = www_server.get_context(request);
         Sealious.Dispatcher.users.create_user(context, request.payload.username, request.payload.password)
         .then(function(response){
-            reply().redirect("/login.html#registered");
+            if(request.payload.redirect_success_url){
+                reply().redirect(request.payload.redirect_success_url);
+            }else{
+                reply();
+            }
         })
         .catch(function(error){
             reply(error);

@@ -1,3 +1,4 @@
+var Sealious = require("sealious");
 var www_server = Sealious.ChipManager.get_chip("channel", "www_server");
 
 var get_context = www_server.get_context;
