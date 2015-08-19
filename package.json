@@ -1,8 +1,10 @@
 {
   "name": "sealious-www-server",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "tag": "beta",
-  "keywords": ["sealious-plugin"],
+  "keywords": [
+    "sealious-plugin"
+  ],
   "description": "",
   "main": "sealious-www-server.js",
   "scripts": {
@@ -17,7 +19,7 @@
     "hapi": "^8.4.0",
     "sha1": "^1.1.0"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "sealious": ">=0.4.0"
   }
 }
