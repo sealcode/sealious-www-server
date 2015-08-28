@@ -40,9 +40,10 @@ www_server.route({
         Sealious.Dispatcher.users.create_user(context, request.payload.username, request.payload.password)
         .then(function(response){
             if(request.payload.redirect_success_url){
-                reply().redirect(request.payload.redirect_success_url);
+                console.log(request.payload.redirect_success_url);
+                reply(response).redirect(request.payload.redirect_success_url);
             }else{
-                reply();
+                reply(response);
             }
         })
         .catch(function(error){
