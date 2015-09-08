@@ -1,4 +1,4 @@
-var Sealious = require("sealious");
+var Sealious = require("../../sealious");
 var Hapi = require("hapi");
 
 var servers = [];

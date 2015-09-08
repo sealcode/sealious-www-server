@@ -1,4 +1,4 @@
-var Sealious = require("sealious");
+var Sealious = require("../../sealious");
 var www_server = Sealious.ChipManager.get_chip("channel", "www_server");
 
 url = "/api/v1/users";

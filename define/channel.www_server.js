@@ -1,4 +1,4 @@
-var Sealious = require("sealious");
+var Sealious = require("../../sealious");
 var sha1 = require("sha1");
 
 var Promise = require("bluebird");

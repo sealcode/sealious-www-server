@@ -1,4 +1,4 @@
-var Sealious = require("sealious");
+var Sealious = require("../../sealious");
 var Promise = require("bluebird");
 var Color = require("color");
 
