@@ -2,23 +2,18 @@ var Sealious = require("sealious");
 var Promise = require("bluebird");
 var Color = require("color");
 
-var field_type_color = new Sealious.ChipTypes.FieldType("color");
-
-field_type_color.prototype.isProperValue = function(value_in_code){
-	return new Promise(function(resolve, reject){
+var field_type_color = new Sealious.ChipTypes.FieldType({
+	name: "color",
+	is_proper_value: function(accept, reject, context, params, new_value){
 		try{
-			Color(value_in_code.toLowerCase());
+			Color(new_value.toLowerCase());
 		} catch(e){
-			reject("Value `" + value_in_code + "` could not be parsed as a color.");
+			reject("Value `" + new_value + "` could not be parsed as a color.");
 		}
-		resolve();
-	})
-}
-
-field_type_color.prototype.encode = function(value_in_code){
-	var color = Color(value_in_code);
-
-	return new Promise(function(resolve, reject){
-		resolve(color.hexString()); //color in hex
-	})
-}
+		accept();
+	},
+	encode: function(context, params, value_in_code){
+		var color = Color(value_in_code);
+		return color.hexString();
+	}
+});
