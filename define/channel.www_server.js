@@ -42,6 +42,8 @@ function process_sealious_response_element(element){
             }else{
                 processed_element[key] = "/managed-files/" + value.id + "/" + value.filename;      
             }
+        }else if(value instanceof Array){
+            processed_element[key] = value;
         }else if(typeof value=="object"){
             processed_element[key] = process_sealious_response_element(value);
         }else{
