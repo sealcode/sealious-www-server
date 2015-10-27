@@ -19,6 +19,15 @@ www_server.server = http_channel.new_server();
 www_server.server.connection({port: www_server.configuration.port,  routes: { cors: true }})
 
 www_server.start = function(){
+    process.on('uncaughtException', function(err) {
+        if(err.errno === 'EADDRINUSE')
+            console.log("Port " + www_server.configuration.port + " is already taken - cannot start www-server.");
+        else if(err.errno === 'EACCES')
+            console.log("Unsufficient privileges to start listening on port " + www_server.configuration.port + ".");
+        else 
+            console.error(err);
+        process.exit(1);
+    });  
     www_server.server.start(function(err){
         Sealious.Logger.info('SERVER RUNNING: '+www_server.server.info.uri+"\n");
     })
