@@ -119,7 +119,7 @@ www_server.route({
     handler: function(request, reply) {
         var context = www_server.get_context(request);
         www_server.kill_session(request.state.SealiousSession);
-        var response = new Sealious.Response({}, false, "response", "logged out")
+        var response = new Sealious.Response({}, false, "response", "logged out");
         if(request.payload.redirect_success){
             reply(response).redirect(request.payload.redirect_success);
         }else{
