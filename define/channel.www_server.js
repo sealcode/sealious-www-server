@@ -79,10 +79,6 @@ function custom_reply_function(original_reply_function, request_details, obj, st
         obj={};
     };
     if(obj.is_sealious_error || obj.is_error){
-        // var message = "";
-        // for (var param in obj.data) {
-        //     message += "\t\t - " + param + ": " + String(obj.data[param]) + "\n";
-        // }
         var res = Sealious.Response.fromError(obj);
         Sealious.Logger.error(request_description+"failed - "+obj.status_message, obj.data);
         ret = original_reply_function(res);
