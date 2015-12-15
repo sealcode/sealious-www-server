@@ -102,7 +102,6 @@ www_server.route({
     path: "/login",
     handler: function(request, reply) {
         var session_timeout = Sealious.ConfigManager.get_config().session_timeout.timeout;
-        console.log(session_timeout)
         var context = www_server.get_context(request);
         Sealious.UserManager.password_match(context, request.payload.username, request.payload.password)
         .then(function(user_id){
