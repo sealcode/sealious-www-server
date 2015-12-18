@@ -3,6 +3,8 @@ var sha1 = require("sha1");
 
 var Promise = require("bluebird");
 
+var ConfigManager = Sealious.ConfigManager;
+
 var http_channel = Sealious.ChipManager.get_chip("channel", "http");
 
 var session_id_to_user_id = {};
@@ -11,19 +13,27 @@ var urldecode = require("querystring").decode;
 
 var www_server = new Sealious.ChipTypes.Channel("www_server");
 
-www_server.default_configuration = {
-	port: 80
-}
+ConfigManager.set_default_config(
+    "chip.channel.www_server", {
+        port: 8080
+    }
+);
 
 www_server.server = http_channel.new_server();
-www_server.server.connection({port: www_server.configuration.port,  routes: { cors: true }})
+
+www_server.routing_table = [];
 
 www_server.start = function(){
+    var port = ConfigManager.get_config().chip.channel.www_server.port;
+    this.server.connection({port: port,  routes: { cors: true }});
+    for (i in this.routing_table) {
+        this.server.route(this.routing_table[i]);
+    }
 	process.on('uncaughtException', function(err) {
 		if(err.errno === 'EADDRINUSE')
-			console.log("Port " + www_server.configuration.port + " is already taken - cannot start www-server.");
+			console.log("Port " + port + " is already taken - cannot start www-server.");
 		else if(err.errno === 'EACCES')
-			console.log("Unsufficient privileges to start listening on port " + www_server.configuration.port + ".");
+			console.log("Unsufficient privileges to start listening on port " + port + ".");
 		else 
 			console.error(err);
 		process.exit(1);
@@ -161,14 +171,18 @@ www_server.route = function(){
 		}
 		if(arguments[0].handler) arguments[0].handler = new_handler; else arguments[0].config.handler = new_handler;
 	}
-	www_server.server.route.apply(this.server, arguments);
+    try {
+        www_server.server.route(arguments[0]);
+    } catch(err) {
+        www_server.routing_table.push(arguments[0]);
+    }
 }
 
-www_server.unmanaged_route = www_server.server.route.bind(www_server.server);
+www_server.unmanaged_route = www_server.route.bind(www_server.server);
 
 
 www_server.static_route = function(path, url) {        
-	this.server.route({ 
+    var route = { 
 		method: 'GET',
 		path: url + '/{param*}',
 		handler: {
@@ -176,7 +190,12 @@ www_server.static_route = function(path, url) {
 				path: path
 			}
 		}
-	});
+	};
+    try {
+        www_server.server.route(route);
+    } catch(err) {
+        www_server.routing_table.push(route);
+    }
 }
 
 
