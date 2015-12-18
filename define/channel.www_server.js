@@ -178,7 +178,13 @@ www_server.route = function(){
     }
 }
 
-www_server.unmanaged_route = www_server.route.bind(www_server.server);
+www_server.unmanaged_route = function (route) {
+    try {
+        www_server.server.route(arguments[0]);
+    } catch(err) {
+        www_server.routing_table.push(arguments[0]);
+    }
+};
 
 
 www_server.static_route = function(path, url) {        
