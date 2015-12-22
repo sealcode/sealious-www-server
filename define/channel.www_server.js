@@ -3,8 +3,6 @@ var sha1 = require("sha1");
 
 var Promise = require("bluebird");
 
-var ConfigManager = Sealious.ConfigManager;
-
 var http_channel = Sealious.ChipManager.get_chip("channel", "http");
 
 var session_id_to_user_id = {};
@@ -13,7 +11,7 @@ var urldecode = require("querystring").decode;
 
 var www_server = new Sealious.ChipTypes.Channel("www_server");
 
-ConfigManager.set_default_config(
+Sealious.ConfigManager.set_default_config(
     "chip.channel.www_server", {
         port: 8080
     }
@@ -23,8 +21,16 @@ www_server.server = http_channel.new_server();
 
 www_server.routing_table = [];
 
+function add_route(route) {
+    try {
+        www_server.server.route(route);
+    } catch(err) {
+        www_server.routing_table.push(route);
+    }
+}
+
 www_server.start = function(){
-    var port = ConfigManager.get_config().chip.channel.www_server.port;
+    var port = Sealious.ConfigManager.get_config().chip.channel.www_server.port;
     this.server.connection({port: port,  routes: { cors: true }});
     for (i in this.routing_table) {
         this.server.route(this.routing_table[i]);
@@ -171,21 +177,10 @@ www_server.route = function(){
 		}
 		if(arguments[0].handler) arguments[0].handler = new_handler; else arguments[0].config.handler = new_handler;
 	}
-    try {
-        www_server.server.route(arguments[0]);
-    } catch(err) {
-        www_server.routing_table.push(arguments[0]);
-    }
+    add_route(arguments[0]);
 }
 
-www_server.unmanaged_route = function (route) {
-    try {
-        www_server.server.route(arguments[0]);
-    } catch(err) {
-        www_server.routing_table.push(arguments[0]);
-    }
-};
-
+www_server.unmanaged_route = add_route;
 
 www_server.static_route = function(path, url) {        
     var route = { 
@@ -197,11 +192,7 @@ www_server.static_route = function(path, url) {
 			}
 		}
 	};
-    try {
-        www_server.server.route(route);
-    } catch(err) {
-        www_server.routing_table.push(route);
-    }
+    add_route(route);
 }
 
 
