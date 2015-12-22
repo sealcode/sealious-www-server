@@ -1,6 +1,10 @@
 var Sealious = require("sealious");
 var www_server = Sealious.ChipManager.get_chip("channel", "www_server");
 
+Sealious.ConfigManager.set_default_config("session_timeout", {
+    timeout: null // session time-life
+})
+
 url = "/api/v1/users";
 
 www_server.route({
@@ -97,14 +101,15 @@ www_server.route({
     method: "POST",
     path: "/login",
     handler: function(request, reply) {
+        var session_timeout = Sealious.ConfigManager.get_config().session_timeout.timeout;
         var context = www_server.get_context(request);
         Sealious.UserManager.password_match(context, request.payload.username, request.payload.password)
         .then(function(user_id){
             var session_id = www_server.new_session(user_id);
             if(request.payload.redirect_success){
-                reply().state('SealiousSession', session_id).redirect(request.payload.redirect_success);
+                reply().state('SealiousSession', session_id, {ttl: session_timeout}).redirect(request.payload.redirect_success);
             }else{
-                reply("http_session: Logged in!").state('SealiousSession', session_id);
+                reply("http_session: Logged in!").state('SealiousSession', session_id, {ttl: session_timeout});
             }
         })
         .catch(function(error){
