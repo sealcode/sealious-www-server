@@ -13,7 +13,10 @@ var www_server = new Sealious.ChipTypes.Channel("www_server");
 
 Sealious.ConfigManager.set_default_config(
     "chip.channel.www_server", {
-        port: 8080
+        connection: {
+            port: 8080,
+            routes: { cors: true }
+        }
     }
 );
 
@@ -30,8 +33,8 @@ function add_route(route) {
 }
 
 www_server.start = function(){
-    var port = Sealious.ConfigManager.get_config().chip.channel.www_server.port;
-    this.server.connection({port: port,  routes: { cors: true }});
+    var port = Sealious.ConfigManager.get_config().chip.channel.www_server.connection.port;
+    this.server.connection(Sealious.ConfigManager.get_config().chip.channel.www_server.connection);
     for (i in this.routing_table) {
         this.server.route(this.routing_table[i]);
     }
