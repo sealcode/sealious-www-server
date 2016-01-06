@@ -14,13 +14,10 @@ var www_server = new Sealious.ChipTypes.Channel("www_server");
 
 Sealious.ConfigManager.set_default_config(
     "chip.channel.www_server", {
-        connections: {
-            http: {
-                port: 8080,
-                routes: { cors: true }
-            }
-        },
-        redirections: {}
+        connections: [{
+            port: 8080,
+            routes: { cors: true }
+        }]
     }
 );
 
