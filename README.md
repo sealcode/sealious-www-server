@@ -11,13 +11,13 @@ As described in HapiJS docs, passing `tls` object in config causes connection to
 You can take a look at example of how to do it in [hello-world](https://github.com/Rayvenden/hello-world/tree/https_example).
 
 ### How `redirections` section works?
-It's also an array for sub-sections which are being later iterated by
-`www_server.start()`. Every sub-section should be an object containing following properties:
+It's also an array of sub-sections. They contain information about redirections
+on ports. Every sub-section should be an object containing following properties:
 * `protocol`
 * source redirection port(`from`)
 * destination redirection port(`to`)
 
-`www_server.start()` reads this sub-sections and tells server how to handle
+Sealious reads this sub-sections and tells server how to handle
 connection on each port by calling [server.ext()](http://hapijs.com/api#serverextevent-method-options) from HapiJS.
 
 ### How to test HTTPS?
