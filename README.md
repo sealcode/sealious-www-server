@@ -1,5 +1,5 @@
 ## How to use configure `sealious-www-server`?
-WWW-server configuration allows you to open ports for listening, definin
+WWW-server configuration allows you to open ports for listening, define
 protocols served on those ports and redirections(useful when you want to
 force users to use HTTPS by redirecting them from HTTP). Configuration is
 separated into 2 sections: `connections` and `redirections`.
