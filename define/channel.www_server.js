@@ -53,7 +53,7 @@ function process_sealious_response_element(element){
             }
         }else if(value instanceof Array){
             processed_element[key] = value;
-        }else if(typeof value=="object"){
+        }else if(value instanceof Object){
             processed_element[key] = process_sealious_response_element(value);
         }else{
             processed_element[key] = value;
