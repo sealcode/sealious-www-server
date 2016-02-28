@@ -70,7 +70,7 @@ www_server.start = function(){
 }
 
 function process_request(context, old_request){
-	request.method = request.method.toUpperCase();
+	old_request.method = old_request.method.toUpperCase();
 	if(old_request.mime=="multipart/form-data"){
 		for(var i in old_request.payload){
 			if(old_request.payload[i].readable){
@@ -109,7 +109,7 @@ function process_request(context, old_request){
 
 www_server.get_context = function(request){
 	var session_id = request.state.SealiousSession;
-	return Sealious.run_action(new Sealious.SuperContext(), ["sessions"], "show", {session_id: session_id})
+	return Sealious.run_action(new Sealious.SuperContext(), ["sessions"], "get_user_id", session_id)
 	.then(function(user_id){
 		var d = new Date();
 		var timestamp = d.getTime();
@@ -121,7 +121,7 @@ www_server.get_context = function(request){
 function custom_handler(handler, request, reply){
 	var context;
 	return www_server.get_context(request)
-	.then(function(){
+	.then(function(context){
 		var processed_request = process_request(context, request);
 		return handler(context, processed_request);
 	})
@@ -129,19 +129,21 @@ function custom_handler(handler, request, reply){
 		var rep = reply(result);
 		if(result instanceof Sealious.Responses.NewSession){
 			var one_day = 1000 * 60 * 60 * 24;
+			var session_id = result.metadata.session_id;
 			rep.state('SealiousSession', session_id, {ttl: one_day});
 		}
 	})
 	.catch(function(error){
 		Sealious.Logger.error(error);
 		var rep;
-		if(error.is_user_fault){
-			rep = reply(error);
+		if(error.is_user_fault && error.to_object){
+			rep = error.to_object();
 		}else{
-			rep = reply(new Sealious.Errors.ServerError("Server error."))
+			rep = new Sealious.Errors.ServerError("Server error.");
 		}
 		var error_code = error_to_http_code(error);
-		rep.code(error_code);
+		var sss = reply(rep);
+		sss.code(error_code);						
 	});
 }
 
