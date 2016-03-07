@@ -12,9 +12,6 @@ error_code_map = {
 	"bad_subject_action": 405
 }
 
-
-console.log(error_code_map)
-
 function error_to_http_code(error){
 	if(error.type){
 		return error_code_map[error.type] || 500;

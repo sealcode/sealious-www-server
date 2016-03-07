@@ -1,4 +1,3 @@
-var Promise = require("bluebird");
 var Sealious = require("sealious");
 var url = require("url");
 var error_to_http_code = require("../error-to-http-code.js");
