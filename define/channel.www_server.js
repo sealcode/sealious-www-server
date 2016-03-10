@@ -113,7 +113,7 @@ www_server.get_context = function(request){
 		var d = new Date();
 		var timestamp = d.getTime();
 		var ip = request.info.remoteAddress;
-		return new Sealious.Context(timestamp, ip, user_id);
+		return new Sealious.Context(timestamp, ip, user_id, session_id);
 	})
 }
 
