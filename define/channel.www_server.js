@@ -125,11 +125,16 @@ function custom_handler(handler, request, reply){
 		return handler(context, processed_request);
 	})
 	.then(function(result){
-		var rep = reply(result);
 		if(result instanceof Sealious.Responses.NewSession){
 			var one_day = 1000 * 60 * 60 * 24;
 			var session_id = result.metadata.session_id;
+			var rep = reply(result);
 			rep.state('SealiousSession', session_id, {ttl: one_day});
+		}else if(result instanceof Sealious.File){
+			var file_info = result;
+			reply.file(file_info.path_on_hdd).type(file_info.mime);
+		}else{
+			reply(result);
 		}
 	})
 	.catch(function(error){
@@ -141,8 +146,7 @@ function custom_handler(handler, request, reply){
 			rep = new Sealious.Errors.ServerError("Server error.");
 		}
 		var error_code = error_to_http_code(error);
-		var sss = reply(rep);
-		sss.code(error_code);						
+		reply(rep).code(error_code);						
 	});
 }
 
