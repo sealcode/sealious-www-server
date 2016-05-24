@@ -13,7 +13,7 @@ Sealious.ConfigManager.set_default_config(
     "chip.channel.www_server", {
         connections: [{
             port: 8080,
-            routes: { cors: true }
+            routes: { cors: {additionalHeaders: ["Access-Control-Allow-Headers"]} }
         }]
     }
 );
@@ -129,10 +129,12 @@ function custom_handler(handler, request, reply){
 			var one_day = 1000 * 60 * 60 * 24;
 			var session_id = result.metadata.session_id;
 			var rep = reply(result);
-			rep.state('SealiousSession', session_id, {ttl: one_day});
+			rep.state('SealiousSession', session_id, {ttl: one_day, path: "/"});
 		}else if(result instanceof Sealious.File){
 			var file_info = result;
 			reply.file(file_info.path_on_hdd).type(file_info.mime);
+		}else if(result instanceof Sealious.VirtualFile){
+			reply(result.content).type(result.mime)
 		}else{
 			reply(result);
 		}
