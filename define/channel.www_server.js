@@ -1,3 +1,4 @@
+var Boom = require("boom");
 var Sealious = require("sealious");
 var url = require("url");
 var error_to_http_code = require("../error-to-http-code.js");
@@ -148,7 +149,10 @@ function custom_handler(handler, request, reply){
 			rep = new Sealious.Errors.ServerError("Server error.");
 		}
 		var error_code = error_to_http_code(error);
-		reply(rep).code(error_code);						
+		if(rep instanceof Error){
+			rep = Boom.wrap(rep, error_code);
+		}
+		reply(rep);
 	});
 }
 

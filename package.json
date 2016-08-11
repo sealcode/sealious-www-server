@@ -14,8 +14,8 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "bluebird": "^2.9.9",
+    "boom": "^3.2.2",
     "clone": "^1.0.2",
-    "color": "^0.8.0",
     "hapi": "~8.5",
     "sha1": "^1.1.0"
   }
