@@ -1,10 +1,6 @@
 var Sealious = require("sealious");
 var www_server = Sealious.ChipManager.get_chip("channel", "www_server");
 
-Sealious.ConfigManager.set_default_config("session_timeout", {
-    timeout: null // session time-life
-})
-
 url = "/api/v1/users";
 
 
@@ -57,7 +53,7 @@ www_server.route({
 });
 
 www_server.unmanaged_route({
-    method: "GET", 
+    method: "GET",
     path: "/managed-files/{file_id}/{file_name}",
     handler: function(request, reply){
         var context = www_server.get_context(request);
