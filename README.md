@@ -13,7 +13,7 @@ As described in HapiJS docs, passing `tls` object in config causes connection to
 Example:
 ```
 Sealious.ConfigManager.set_config(
-    "chip.channel.www_server", {
+    "www_server", {
         connections: [
             { // HTTPS section
                 port: 4430,

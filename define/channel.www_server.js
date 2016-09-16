@@ -30,7 +30,7 @@ function add_route(route) {
 }
 
 www_server.start = function(){
-    var config = Sealious.ConfigManager.get_config().chip.channel.www_server;
+    var config = Sealious.ConfigManager.get_config().www_server;
     for (var cnx in config.connections) {
         this.server.connection(config.connections[cnx]);
     }

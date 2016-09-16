@@ -1,7 +1,7 @@
 session_timeout:
     timeout: null
 
-chip.channel.www_server:
+www_server:
     connections:
         - port: 8080
         - routes:
