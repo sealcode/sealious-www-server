@@ -10,14 +10,14 @@ var http_channel = Sealious.ChipManager.get_chip("channel", "http");
 var www_server = new Sealious.ChipTypes.Channel("www_server");
 www_server.server = http_channel.new_server();
 
-Sealious.ConfigManager.set_default_config(
-    "chip.channel.www_server", {
-        connections: [{
-            port: 8080,
-            routes: { cors: {additionalHeaders: ["Access-Control-Allow-Headers"]} }
-        }]
-    }
-);
+// Sealious.ConfigManager.set_default_config(
+//     "chip.channel.www_server", {
+//         connections: [{
+//             port: 8080,
+//             routes: { cors: {additionalHeaders: ["Access-Control-Allow-Headers"]} }
+//         }]
+//     }
+// );
 
 www_server.routing_table = [];
 
@@ -30,7 +30,7 @@ function add_route(route) {
 }
 
 www_server.start = function(){
-    var config = Sealious.ConfigManager.get_config().chip.channel.www_server;
+    var config = Sealious.ConfigManager.get_config().www_server;
     for (var cnx in config.connections) {
         this.server.connection(config.connections[cnx]);
     }
@@ -89,7 +89,7 @@ function process_request(context, old_request){
 						var filename = old_request.payload[i][j].hapi.filename;
 						var data = old_request.payload[i][j]._data;
 						var mime_type = old_request.payload[i][j].hapi.headers["content-type"];
-						old_request.payload[i][j] = new Sealious.File(context, filename, data, null, mime_type);                            
+						old_request.payload[i][j] = new Sealious.File(context, filename, data, null, mime_type);
 					}
 				}
 			}
@@ -173,8 +173,8 @@ www_server.route = function(){
 
 www_server.unmanaged_route = add_route;
 
-www_server.static_route = function(path, url) {        
-    var route = { 
+www_server.static_route = function(path, url) {
+    var route = {
 		method: 'GET',
 		path: url + '/{param*}',
 		handler: {
