@@ -1,9 +1,3 @@
-session_timeout:
-    timeout: null
-
-www_server:
-    connections:
-        - port: 8080
-        - routes:
-             cors:
-                 additionalHeaders: ["Access-Control-Allow-Headers"]
+www-server:
+  port: 8080
+  api-base: /api/v1
