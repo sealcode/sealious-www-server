@@ -7,15 +7,7 @@ const Hapi = require("hapi");
 const Boom = require("boom");
 const merge = require("merge");
 
-const error_to_boom = require("./error-to-boom.js");
-
-const http_to_subject_method = {
-	"GET": "show",
-	"POST": "create",
-	"PATCH": "edit",
-	"PUT": "replace",
-	"DELETE": "delete"
-}
+const handle_request = require("./handle-request.js");
 
 module.exports = function(App){
 	const channel = App.createChip(Sealious.Channel, {name:"www-server"});
@@ -27,44 +19,16 @@ module.exports = function(App){
 
 	const path = `${rest_url_base}/{elements*}`;
 
-	function get_request_body(context, request){
-		const body = merge(request.payload, request.query);
-		for(var i in request.payload){
-			if(request.payload[i].payload && request.payload[i].payload instanceof Buffer){
-				let filename = request.payload[i].filename;
-				var mime_type = request.payload[i].headers["content-type"];
-				var data = request.payload[i].payload;
-				body[i] = new Sealious.File(context, filename, data, null, mime_type);
-			}
-		}
-		return body;
-	};
-
-	function handle_request(request, reply){
-		try{
-			const context = new Sealious.Context();
-			var path_elements = request.params.elements.split('/');
-			var action_name = http_to_subject_method[request.method.toUpperCase()];
-			var action = new App.Action(path_elements, action_name);
-
-			const body = get_request_body(context, request);
-			return action.run(context, body)
-			.then(reply)
-			.catch(function(error){
-				App.Logger.error(error);
-				if(error instanceof Sealious.Error && error.is_user_fault){
-					reply(error_to_boom(error));
-				}else{
-					reply(error);
-				}
-			});
-		}catch(error){console.error(error); App.Logger.error(error); reply(error); return null;}
-	};
+	server.state(config["session-cookie-name"], {
+		ttl: 24 * 60 * 60 * 1000,     // One day
+		path: '/',
+		isSecure: false,
+	});
 
 	server.route({
 		method: ["GET", "DELETE"],
 		path: path,
-		handler: handle_request,
+		handler: handle_request.bind({}, App),
 	});
 
 	server.route({
@@ -76,7 +40,7 @@ module.exports = function(App){
 					output: "annotated",
 				},
 			},
-			handler: handle_request,
+			handler: handle_request.bind({}, App),
 		}
 	});
 

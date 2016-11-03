@@ -1,3 +1,4 @@
 www-server:
   port: 8080
   api-base: /api/v1
+  session-cookie-name: sealious-session
