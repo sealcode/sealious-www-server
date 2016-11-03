@@ -18,9 +18,12 @@ function handle_request(app, request, reply){
 			return action.run(context, body);
 		})
 		.then(function(response){
+			console.log(response);
 			if(response instanceof app.Sealious.Responses.NewSession){
 				reply(response).state(config["session-cookie-name"], response.metadata.session_id);
-			}else{
+			}else if(response instanceof app.Sealious.Responses.ResourceCreated){
+				reply(response).code(201);
+			} else {
 				reply(response);
 			}
 		})
