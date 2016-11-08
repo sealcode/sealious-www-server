@@ -44,6 +44,20 @@ module.exports = function(App){
 		}
 	});
 
+	channel.static_route = function(local_path, public_path){
+		server.register(require("inert"), function(){
+			server.route({ 
+				method: 'GET',
+				path: '/{param*}',
+				handler: {
+					directory: {
+						path: local_path
+					}
+				}
+			});
+		});
+	};
+
 	channel.start = function(){
 		return new Promise(function(resolve, reject){
 			server.start(function(err){
