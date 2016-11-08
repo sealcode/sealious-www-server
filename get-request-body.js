@@ -1,9 +1,14 @@
 "use strict";
 const merge = require("merge");
 const Sealious = require("sealious");
+const squares = require("squares");
 
 function get_request_body(context, request){
-	const body = merge(request.payload, request.query);
+	const parsed_query = {};
+	for(const i in request.query){
+		squares.set(parsed_query, i, request.query[i]);
+	}
+	const body = merge(request.payload, parsed_query);
 	for(var i in request.payload){
 		if(request.payload[i].payload && request.payload[i].payload instanceof Buffer){
 			let filename = request.payload[i].filename;
