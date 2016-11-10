@@ -18,7 +18,9 @@ function handle_request(app, request, reply){
 			return action.run(context, body);
 		})
 		.then(function(response){
-			if(response instanceof app.Sealious.Responses.NewSession){
+			if(response instanceof app.Sealious.File){
+				reply.file(response.path_on_hdd);
+			}else if(response instanceof app.Sealious.Responses.NewSession){
 				reply(response).state(config["session-cookie-name"], response.metadata.session_id);
 			}else if(response instanceof app.Sealious.Responses.ResourceCreated){
 				reply(response).code(201);
