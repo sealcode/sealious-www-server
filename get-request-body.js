@@ -1,7 +1,21 @@
 "use strict";
 const merge = require("merge");
 const Sealious = require("sealious");
-const squares = require("squares");
+
+const squares = {
+	set: function(obj, key, value){
+		const keys = key.split(/[\]\[]{1,2}/g).filter(s=>s!="");
+		let current = obj;
+		const last_key = keys.splice(-1)[0];
+		for(const i in keys){
+			if(current[keys[i]] === undefined){
+				current[keys[i]] = {};
+			}
+			current = current[keys[i]];
+		}
+		current[last_key] = value;
+	}
+};
 
 function get_request_body(context, request){
 	const parsed_query = {};

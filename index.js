@@ -25,23 +25,25 @@ module.exports = function(App){
 		isSecure: false,
 	});
 
-	server.route({
-		method: ["GET", "DELETE"],
-		path: path,
-		handler: handle_request.bind({}, App),
-	});
-
-	server.route({
-		method: ["PATCH", "PUT", "POST"],
-		path: path,
-		config: {
-			payload: {
-				multipart: {
-					output: "annotated",
-				},
-			},
+	server.register(require("inert"), function(){
+		server.route({
+			method: ["GET", "DELETE"],
+			path: path,
 			handler: handle_request.bind({}, App),
-		}
+		});
+
+		server.route({
+			method: ["PATCH", "PUT", "POST"],
+			path: path,
+			config: {
+				payload: {
+					multipart: {
+						output: "annotated",
+					},
+				},
+				handler: handle_request.bind({}, App),
+			}
+		});
 	});
 
 	channel.static_route = function(local_path, public_path){
