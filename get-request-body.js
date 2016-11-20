@@ -46,7 +46,6 @@ function get_request_body(context, request){
 			parsed_query[i] = new Sealious.File(context, filename, data, null, mime_type);
 		}
 	}
-	console.log("parsed query:", JSON.stringify(parsed_query));
 	return parsed_query;
 };
 
