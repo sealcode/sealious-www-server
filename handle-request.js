@@ -19,7 +19,7 @@ function handle_request(app, request, reply){
 		})
 		.then(function(response){
 			if(response instanceof app.Sealious.File){
-				reply.file(response.path_on_hdd);
+				reply.file(response.path_on_hdd).type(response.mime);
 			}else if(response instanceof app.Sealious.Responses.NewSession){
 				reply(response).state(config["session-cookie-name"], response.metadata.session_id);
 			}else if(response instanceof app.Sealious.Responses.ResourceCreated){
