@@ -13,7 +13,7 @@ function extract_context(app, request){
 		if(results.length === 0){
 			return new Sealious.Context(timestamp, ip, undefined);
 		}else{
-			return new Sealious.Context(timestamp, ip, results[0].body.user);
+			return new Sealious.Context(timestamp, ip, results[0].body.user, session_id);
 		}
 	});
 };
