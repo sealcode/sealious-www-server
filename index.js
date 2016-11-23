@@ -66,7 +66,7 @@ module.exports = function(App){
 				if (err) {
 					throw err;
 				}
-				console.log(`Server running at: ${server.info.uri}`);
+				App.Logger.info(`www-server: running at ${server.info.uri}`);
 				resolve();
 			});
 		});
