@@ -25,6 +25,12 @@ module.exports = function(App){
 		isSecure: false,
 	});
 
+	server.state(config["anonymous-cookie-name"], {
+		ttl: 24 * 60 * 60 * 1000,     // One day
+		path: '/',
+		isSecure: false,
+	});
+
 	server.register(require("inert"), function(){
 		server.route({
 			method: ["GET", "DELETE"],
