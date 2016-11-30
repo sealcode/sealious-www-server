@@ -66,6 +66,8 @@ module.exports = function(App){
 		});
 	};
 
+	channel.custom_raw_route = server.route.bind(server);
+
 	channel.start = function(){
 		return new Promise(function(resolve, reject){
 			server.start(function(err){
