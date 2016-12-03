@@ -8,6 +8,10 @@ const Boom = require("boom");
 const merge = require("merge");
 
 const handle_request = require("./handle-request.js");
+const get_request_body = require("./get-request-body.js");
+const extract_context = require("./extract-context.js");
+const handle_response = require("./handle-response.js");
+const handle_error = require("./handle-error.js");
 
 module.exports = function(App){
 	const channel = App.createChip(Sealious.Channel, {name:"www-server"});
@@ -62,6 +66,29 @@ module.exports = function(App){
 						path: local_path
 					}
 				}
+			});
+		});
+	};
+
+	channel.custom_route = function(method, path, handler){
+		server.register(require("inert"), function(){
+			server.route({ 
+				method: method,
+				path: path,
+				handler: function(request, reply){					
+					let context = null;
+
+					return extract_context(App, request)
+					.then(function(_context){
+						context = _context;
+						return get_request_body(context, request);
+					})
+					.then(function(body){
+						return handler(App, context, body);
+					})
+					.then((result) => handle_response(App, context, reply)(result))
+					.catch((result) => handle_error(App, reply)(result));
+				},
 			});
 		});
 	};
