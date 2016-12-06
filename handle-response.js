@@ -5,7 +5,7 @@ module.exports = function(app, context, reply){
 	return function(response){
 		let rep = null;
 		if(response instanceof app.Sealious.File){
-			rep = reply.file(response.path_on_hdd).type(response.mime);
+			rep = reply.file(response.path_on_hdd, {confine: false}).type(response.mime);
 		}else if(response instanceof app.Sealious.Responses.NewSession){
 			rep = reply(response).state(config["session-cookie-name"], response.metadata.session_id);
 		}else if(response instanceof app.Sealious.Responses.ResourceCreated){
