@@ -50,6 +50,7 @@ module.exports = function(App){
 					multipart: {
 						output: "annotated",
 					},
+					maxBytes: config["max-payload-bytes"],
 				},
 				handler: handle_request.bind({}, App),
 			}

@@ -3,3 +3,4 @@ www-server:
   api-base: /api/v1
   session-cookie-name: sealious-session
   anonymous-cookie-name: sealious-anon
+  max-payload-bytes: 10485760
