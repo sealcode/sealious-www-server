@@ -12,14 +12,13 @@ function handle_request(app, request, reply){
 		const config = 	app.ConfigManager.get_config()["www-server"];
 		var path_elements = request.params.elements.split('/');
 		var action_name = http_to_subject_method[request.method.toUpperCase()];
-		var action = new app.Action(path_elements, action_name);
 		let context = null;
 		
 		return extract_context(app, request)
 		.then(function(_context){
 			context = _context;
 			let body = get_request_body(context, request);
-			return action.run(context, body);
+			return app.run_action(context, path_elements, action_name, body);
 		})
 		.then((result) => handle_response(app, context, reply)(result))
 		.catch((result) => handle_error(app, reply)(result));
