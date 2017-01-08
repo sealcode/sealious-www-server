@@ -25,7 +25,7 @@ Sealious.ConfigManager.set_config(
             { // HTTP section
                 port: 8080
             }
-    }
+    ]}
 );
 ```
 Code above opens 2 connections. First for HTTPS on port 4430 with SSL certificate
@@ -39,7 +39,7 @@ on ports. Every sub-section should be an object containing following properties:
 * destination redirection port(`to`)
 
 Sealious reads this sub-sections and tells server how to handle
-connection on each port by calling 
+connection on each port by calling
 [server.ext()](http://hapijs.com/api#serverextevent-method-options) from HapiJS.
 
 Example:
