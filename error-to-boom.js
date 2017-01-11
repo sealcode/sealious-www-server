@@ -13,7 +13,9 @@ const error_code_map = {
 }
 
 function error_to_boom(error){
-	const ret = Boom.wrap(error, error_code_map[error.type]);
+	const code = error_code_map[error.type];
+	const ret = Boom.create(code, error.message, error);
+	ret.output.payload = error;
 	return ret;	
 }
 
