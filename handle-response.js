@@ -15,8 +15,9 @@ module.exports = function(app, context, reply){
 		} else {
 			rep = reply(response);
 		}
-		if(context.anon_session_is_new){
+		//if(context.anon_session_is_new || context.anonymous_session_id != ){
+		//commented out so the anonymous_session_id is reset on logout
 			rep.state(config["anonymous-cookie-name"], context.anonymous_session_id);
-		}
+		//}
 	};
 };
